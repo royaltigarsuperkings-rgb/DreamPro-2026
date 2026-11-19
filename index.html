@@ -657,6 +657,13 @@ body.typing .floating-menu-options { display: none !important; }
 #adminResultControl { border-color: #26c6da; }
 #adminResultControl .admin-section-title { color: #4dd0e1; }
 #pastResultControl { border-color: #ffb74d; }
+
+/* ===== v38: no flicker of the top bar while scrolling ===== */
+.header, .clock-strip { flex: 0 0 auto; position: relative; z-index: 20; -webkit-transform: translate3d(0,0,0); transform: translate3d(0,0,0); will-change: transform; contain: layout paint style; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.screen-panel { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+html, body { overscroll-behavior: none; }
+.info-bar { flex: 0 0 auto; }
+.wc-prz2 { white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -1638,7 +1645,7 @@ function calc(type, count, user) {
 
 // ---------- ENTRY INPUT ----------
 function switchTab(n) {
-    currentTab = n;
+    currentTab = n; lastBoxId = "";
     for (let i = 1; i <= 3; i++) $("tab" + i).classList.toggle("active", i === n);
     const cfg = TABS[n];
     $("inputFields").innerHTML = cfg.fields.map((f, i) =>
@@ -1649,7 +1656,9 @@ function switchTab(n) {
     ).join("") + `<div class="all-col"><button type="button" class="all-btn" id="allBtn" onclick="fillAll()">ALL</button></div>`;
     updateLockLabels();
 }
+let lastBoxId = "";
 function onFieldFocus(el) {
+    lastBoxId = el.id.replace(/^(in_|cnt_)/, "");
     setTimeout(() => { try { el.scrollIntoView({ block: "nearest", behavior: "smooth" }); } catch (e) {} }, 300);
 }
 document.addEventListener("focusin", function (e) {
@@ -1692,11 +1701,15 @@ function onKey(ev, el) {
 }
 // ALL: copies the first box's number and count into every other box of this tab. Each box can still be edited or cleared afterwards.
 function fillAll() {
-    const cfg = TABS[currentTab], f0 = cfg.fields[0];
-    const num = $("in_" + f0.id).value.trim(), cnt = $("cnt_" + f0.id).value.trim();
-    if (num.length !== cfg.digits) { toast("Type the " + cfg.digits + "-digit number and count in the first box, then tap ALL."); return; }
+    const cfg = TABS[currentTab], fs = cfg.fields;
+    const full = f => $("in_" + f.id).value.trim().length === cfg.digits;
+    // source box: the box the person typed in last (if its number is complete), otherwise the first box with a complete number
+    let src = fs.find(f => f.id === lastBoxId && full(f)) || fs.find(full);
+    if (!src) { toast("Type the " + cfg.digits + "-digit number and count in any box, then tap ALL."); return; }
+    const num = $("in_" + src.id).value.trim(), cnt = $("cnt_" + src.id).value.trim();
     let skipped = false;
-    cfg.fields.slice(1).forEach(f => {
+    fs.forEach(f => {
+        if (f.id === src.id) return;
         let v = num, c = cnt;
         if (f.type === "Box" && v[0] === v[1] && v[1] === v[2]) { v = ""; c = ""; skipped = true; }   // 111, 222 ...: nothing (number or count) goes into Box
         $("in_" + f.id).value = v;
@@ -2640,12 +2653,27 @@ function winOf(e, res) {
 }
 function winnersFor(list, res) {
     const rows = []; let tw = 0, tc = 0;
+    const T3 = [[5000, 400, "1st Prize"], [500, 50, "2nd Prize"], [250, 20, "3rd Prize"], [100, 20, "4th Prize"], [50, 10, "5th Prize"]];
     list.forEach(e => {
+        if (e.type === "3D" && res && res.published) {
+            // Straight (3D): EVERY hit is its own row, each paid by the entry's count:
+            // one row for each of 1st-5th that carries this number, then one row for every time the number is in the Complimentary list
+            for (let i = 0; i < 5; i++) {
+                if (e.number === res.prizes[i]) {
+                    const w = { win: T3[i][0] * e.count, comm: T3[i][1] * e.count, label: T3[i][2] };
+                    rows.push({ e: e, w: w }); tw += w.win; tc += w.comm;
+                }
+            }
+            const ct = res.comp.filter(x => x === e.number).length;
+            for (let i = 0; i < ct; i++) {
+                const w = { win: 20 * e.count, comm: 10 * e.count, label: "Complimentary" };
+                rows.push({ e: e, w: w }); tw += w.win; tc += w.comm;
+            }
+            return;
+        }
         const w = winOf(e, res);
         if (!w) return;
-        // a Complimentary number written several times in the list pays several times: one separate row for each time
-        const times = w.label === "Complimentary" ? Math.max(1, res.comp.filter(x => x === e.number).length) : 1;
-        for (let i = 0; i < times; i++) { rows.push({ e: e, w: w }); tw += w.win; tc += w.comm; }
+        rows.push({ e: e, w: w }); tw += w.win; tc += w.comm;
     });
     return { rows: rows, tw: tw, tc: tc };
 }
@@ -2657,7 +2685,7 @@ function winRowHTML(r, canDel) {
     const m = n => (Math.round(n * 100) / 100).toString();
     const del = canDel ? `<div class="wc-x">${delCellHTML(r.e)}</div>` : "";
     const pz = Math.max(0, PRIZE_ORDER.indexOf(r.w.label));
-    return `<div class="wc-row pzr-${pz}"><span class="wc-box"><span class="wc-prz2 pz-${pz}">${esc(PRIZE_SHORT[r.w.label] || r.w.label)}</span><span class="et">${esc(r.e.box)} ${esc(timeOf(r.e))}</span></span><span class="wc-num">${esc(r.e.number)}</span><span>${r.e.count}</span>` +
+    return `<div class="wc-row pzr-${pz}"><span class="wc-box"><span class="wc-prz2 pz-${pz}">${esc((r.w.label === "1D Prize" || r.w.label === "2D Match") ? (r.e.type + "-" + r.e.box) : (PRIZE_SHORT[r.w.label] || r.w.label))}</span><span class="et">${(r.w.label === "1D Prize" || r.w.label === "2D Match") ? "" : esc(r.e.box) + " "}${esc(timeOf(r.e))}</span></span><span class="wc-num">${esc(r.e.number)}</span><span>${r.e.count}</span>` +
         `<span class="wc-prize">${m(r.w.win)}</span><span class="wc-comm">${m(r.w.comm)}</span><span class="wc-tot">${m(r.w.win + r.w.comm)}</span>${del}</div>`;
 }
 function groupWinners(rows) {                           // one group per sub admin: ALL prizes of the shift together
@@ -2689,14 +2717,14 @@ function resultCardHTML(dateKey, shiftCode, resMap) {
     let html = `<div class="res-card rc-${shiftCode}"><div class="res-head"><div style="font-size:16px;">${showDate(dateKey)}<br><span style="font-size:11px; color:#555;">${weekday(dateKey)}</span></div>` +
         `<div style="font-size:20px; color:#2e7d32; text-align:right; line-height:1.2;">${esc(sh.label)}</div></div><div style="margin-top:10px;">`;
     defs.forEach((d, i) => {
-        html += `<div class="res-line" style="background:${d[2]};"><span class="res-badge">${d[0]}</span><span class="res-amt">${d[1]}</span><span class="res-val">${esc(P[i])}</span></div>`;
+        html += `<div class="res-line" style="background:${d[2]};"><span class="res-badge">${d[0]}</span><span class="res-amt">${d[1]}</span><span class="res-val">${esc(P[i] || "-")}</span></div>`;
     });
     html += `<div class="res-comp-note">Complimentary Prizes = ₹20</div><div class="result-grid">`;
     if (pub) res.comp.slice().sort().forEach(n => { html += `<div class="result-box-item">${esc(n)}</div>`; });
     html += `</div>`;
     if (pub) html = html.replace('<div class="result-grid">', '<div class="result-grid comp-cols" style="grid-template-rows:repeat(' + Math.max(1, Math.min(10, res.comp.length)) + ', auto);">');
     if (!pub) html += `<div class="res-pending">Result not published yet</div>`;
-    else if (res.complete === false) html += `<div class="res-pending">Complimentary list pending</div>`;
+    else if (res.complete === false) { const pd = pendingText(res.prizes, res.comp || []); html += `<div class="res-pending">${esc(pd.join(", "))} pending</div>`; }
     if (pub) html += `<button class="share-btn" style="margin:12px 0 0;" onclick="shareResultOne('${dateKey}','${shiftCode}')">📤 Share ${esc(sh.label)}</button>`;
     return html + `</div></div>`;
 }
@@ -3071,7 +3099,7 @@ function renderDash() {
         const locked = ruleLocked(t, sh.code);
         h += `<div class="shhd sh-${sh.code}"><span>🕐 ${esc(sh.label)}</span><small>${list.length} entries</small></div>` +
             `<div class="dsh"><div>Count<b>${s.count}</b></div><div class="nt">Net<b>${m(s.net)}</b></div><div class="cl">Claims<b>${pub ? m(cl) : "-"}</b></div><div class="bl">Balance<b>${pub ? m(s.net - cl) : "-"}</b></div></div>` +
-            `<div class="dsh-st"><span style="color:${full ? "#69f0ae" : pub ? "#ffd54f" : "#ff8a80"};">${full ? "✔ Result published" : pub ? "⚠ Prizes only" : "⏳ Result pending"}</span><span style="color:${locked ? "#ff8a80" : "#69f0ae"};">${locked ? "🔒 Locked" : "🔓 Open"}</span></div>`;
+            `<div class="dsh-st"><span style="color:${full ? "#69f0ae" : pub ? "#ffd54f" : "#ff8a80"};">${full ? "✔ Result published" : pub ? "⚠ Partly published" : "⏳ Result pending"}</span><span style="color:${locked ? "#ff8a80" : "#69f0ae"};">${locked ? "🔒 Locked" : "🔓 Open"}</span></div>`;
     });
     h += `<div class="sbox"><div class="summary-row"><span>TODAY · ALL SHIFTS</span></div>` +
         `<div class="summary-row" style="margin-top:4px;"><span>Total Count:</span><span>${cnt}</span></div>` +
@@ -3195,7 +3223,8 @@ function shareText(kind, shiftOv, ctx) {
 function resultText(res, sh, date) {
     const nm = ["1st", "2nd", "3rd", "4th", "5th"];
     let t = sh.label + "\n" + showDate(date) + " " + weekday(date) + "\n\n";
-    res.prizes.forEach((p, i) => { t += nm[i] + "\u2003\u2003\u2003" + p + "\n"; });
+    res.prizes.forEach((p, i) => { if (p) t += nm[i] + "\u2003\u2003\u2003" + p + "\n"; });
+    if (!res.comp.length) return t;
     t += "\nComplimentary (₹20):\n";
     const c = res.comp.slice().sort(), rows = Math.max(1, Math.min(10, c.length)), cols = Math.ceil(c.length / rows);
     for (let r = 0; r < rows; r++) {
@@ -3234,34 +3263,45 @@ async function shareData(kind, ctx) {
 }
 
 // ---------- RESULT PUBLISH ----------
+// Prizes can be published one by one (1st, then 2nd, ...). A box left empty keeps what was published before; the rest is added later.
+const PRIZE_NAMES = ["1st", "2nd", "3rd", "4th", "5th"];
+function pendingText(ps, comp) {
+    const p = PRIZE_NAMES.filter((n, i) => !ps[i]);
+    if (!comp.length) p.push("Complimentary");
+    return p;
+}
 function publishResultsAction() {
     if (!isPriv()) return;
     if (curShift() === "ALL") { alert("Select one shift first."); return; }
     const shift = curShift(), key = selDate + "|" + shift;
     if (selDate > todayKey()) { alert("Cannot publish a result for a future date."); return; }
-    const ps = ["res1st", "res2nd", "res3rd", "res4th", "res5th"].map(id => $(id).value.trim());
-    if (ps.some(x => !/^\d{3}$/.test(x))) { alert("Please enter all 5 prizes as 3-digit numbers."); return; }
+    const old = db.results[key], hasOld = !!(old && old.published);
+    const oldP = (hasOld && Array.isArray(old.prizes)) ? old.prizes : ["", "", "", "", ""];
+    const typed = ["res1st", "res2nd", "res3rd", "res4th", "res5th"].map(id => $(id).value.trim());
+    if (typed.some(x => x && !/^\d{3}$/.test(x))) { alert("Each prize must be a 3-digit number."); return; }
+    const ps = typed.map((x, i) => x || oldP[i] || "");
     // every number is kept, repeated numbers too. Numbers pasted without a space (003292637) are cut into groups of 3.
-    const comp = [];
+    let comp = [];
     let badTok = false;
     $("resComp").value.split(/[^0-9]+/).filter(Boolean).forEach(tk => {
         if (tk.length % 3 !== 0) { badTok = true; return; }
         for (let i = 0; i < tk.length; i += 3) comp.push(tk.slice(i, i + 3));
     });
     if (badTok) { alert("Complimentary numbers must be 3 digits each."); return; }
-    if (!confirm("Publish result for\n" + shiftObj(shift).label + " · " + showDate(selDate) + " ?")) return;
-    const old = db.results[key], oldPartial = !!(old && old.published && old.complete === false);
-    const complete = comp.length > 0;
-    if (!complete && !confirm("Complimentary list is empty.\n\nPublish only the 5 prizes now? The shift stays LOCKED until the complimentary list is published.")) return;
-    if (old && old.published && !oldPartial && !confirm("Result already published for this shift. Overwrite?")) return;
+    if (!comp.length && hasOld && Array.isArray(old.comp)) comp = old.comp.slice();
+    if (!ps.some(Boolean) && !comp.length) { alert("Type at least one prize number to publish."); return; }
+    const complete = ps.every(Boolean) && comp.length > 0;
+    const pend = pendingText(ps, comp);
+    if (!confirm("Publish result for\n" + shiftObj(shift).label + " · " + showDate(selDate) + " ?" + (pend.length ? "\n\nStill pending: " + pend.join(", ") + "\n(The shift stays LOCKED until everything is published.)" : ""))) return;
+    if (hasOld && old.complete !== false && !confirm("Result already published for this shift. Overwrite?")) return;
     const rdoc = { date: selDate, shift: shift, prizes: ps, comp: comp, published: true, complete: complete };
     db.results[key] = rdoc;
     if (complete) delete db.lockOv[key];      // full result published: the shift returns to its normal rule (unlocked)
     const rid = dayDocId(selDate, shift);
     FB.setDoc(fsDoc("results", rid), rdoc).catch(fbErr);
-    audit(complete ? "Result published" : "Prizes published (complimentary pending)", shiftObj(shift).label + " · " + showDate(selDate) + " · " + ps.join("-"));
+    audit(complete ? "Result published" : "Result partly published (" + pend.join(", ") + " pending)", shiftObj(shift).label + " · " + showDate(selDate) + " · " + ps.map(x => x || "-").join("-"));
     if (complete) FB.deleteDoc(fsDoc("locks", rid)).catch(fbErr);
-    alert(complete ? "Result published successfully. The shift is unlocked." : "5 prizes published. The shift stays locked until you publish the complimentary list.");
+    alert(complete ? "Result published successfully. The shift is unlocked." : "Published. Still pending: " + pend.join(", ") + ". The shift stays locked until all are published.");
     refreshAll();
 }
 
@@ -3271,30 +3311,37 @@ async function publishPastResultAction() {
     const date = $("pastDate").value, shift = $("pastShift").value;
     if (!date) { alert("Select the date."); return; }
     if (date >= todayKey()) { alert("This box is only for previous days. For today use the Publish Result box above."); return; }
-    const ps = ["pastRes1", "pastRes2", "pastRes3", "pastRes4", "pastRes5"].map(id => $(id).value.trim());
-    if (ps.some(x => !/^\d{3}$/.test(x))) { alert("Please enter all 5 prizes as 3-digit numbers."); return; }
-    const comp = [];
+    const typed = ["pastRes1", "pastRes2", "pastRes3", "pastRes4", "pastRes5"].map(id => $(id).value.trim());
+    if (typed.some(x => x && !/^\d{3}$/.test(x))) { alert("Each prize must be a 3-digit number."); return; }
+    let comp = [];
     let badTok = false;
     $("pastComp").value.split(/[^0-9]+/).filter(Boolean).forEach(tk => {
         if (tk.length % 3 !== 0) { badTok = true; return; }
         for (let i = 0; i < tk.length; i += 3) comp.push(tk.slice(i, i + 3));
     });
     if (badTok) { alert("Complimentary numbers must be 3 digits each."); return; }
-    const complete = comp.length > 0;
-    if (!confirm("Publish result for\n" + shiftObj(shift).label + " · " + showDate(date) + " " + weekday(date) + " ?")) return;
-    if (!complete && !confirm("Complimentary list is empty. Publish only the 5 prizes?")) return;
     busy = true;
     try {
         const rid = dayDocId(date, shift);
-        const old = await FB.getDoc(fsDoc("results", rid));
-        if (old.exists() && old.data().published && old.data().complete !== false && !confirm("A result is already published for this shift and date.\n\nOverwrite it?")) return;
+        const oldSn = await FB.getDoc(fsDoc("results", rid));
+        const od = oldSn.exists() ? oldSn.data() : null, hasOld = !!(od && od.published);
+        const oldP = (hasOld && Array.isArray(od.prizes)) ? od.prizes : ["", "", "", "", ""];
+        const ps = typed.map((x, i) => x || oldP[i] || "");
+        if (!comp.length && hasOld && Array.isArray(od.comp)) comp = od.comp.slice();
+        if (!ps.some(Boolean) && !comp.length) { alert("Type at least one prize number to publish."); return; }
+        const complete = ps.every(Boolean) && comp.length > 0;
+        const pend = pendingText(ps, comp);
+        if (!confirm("Publish result for\n" + shiftObj(shift).label + " · " + showDate(date) + " " + weekday(date) + " ?" + (pend.length ? "\n\nStill pending: " + pend.join(", ") : ""))) return;
+        if (hasOld && od.complete !== false && !confirm("A result is already published for this shift and date.\n\nOverwrite it?")) return;
         const rdoc = { date: date, shift: shift, prizes: ps, comp: comp, published: true, complete: complete };
         await FB.setDoc(fsDoc("results", rid), rdoc);
         if (complete) FB.deleteDoc(fsDoc("locks", rid)).catch(console.error);
-        audit(complete ? "Previous day result published" : "Previous day prizes published (complimentary pending)", shiftObj(shift).label + " · " + showDate(date) + " · " + ps.join("-"));
-        ["pastRes1", "pastRes2", "pastRes3", "pastRes4", "pastRes5"].forEach(id => { $(id).value = ""; });
-        $("pastComp").value = "";
-        alert("Result published for " + shiftObj(shift).label + " · " + showDate(date) + ".");
+        audit(complete ? "Previous day result published" : "Previous day result partly published (" + pend.join(", ") + " pending)", shiftObj(shift).label + " · " + showDate(date) + " · " + ps.map(x => x || "-").join("-"));
+        if (complete) {
+            ["pastRes1", "pastRes2", "pastRes3", "pastRes4", "pastRes5"].forEach(id => { $(id).value = ""; });
+            $("pastComp").value = "";
+        }
+        alert(complete ? "Result published for " + shiftObj(shift).label + " · " + showDate(date) + "." : "Published. Still pending: " + pend.join(", ") + ". Select the same date and shift again later and publish the rest.");
     } catch (e) {
         fbErr(e);
         alert("Could not publish the result. Check the connection and try again.");
@@ -3309,7 +3356,7 @@ function deleteResultAction() {
     if (!confirm("Delete the published result for\n" + shiftObj(shift).label + " · " + showDate(selDate) + " ?\n\nWinners and settlement for this shift will clear until you publish the correct result again.")) return;
     delete db.results[key];
     FB.deleteDoc(fsDoc("results", dayDocId(selDate, shift))).catch(fbErr);
-    audit("Result deleted", shiftObj(shift).label + " · " + showDate(selDate) + " · was " + res.prizes.join("-"));
+    audit("Result deleted", shiftObj(shift).label + " · " + showDate(selDate) + " · was " + res.prizes.map(x => x || "-").join("-"));
     toast("Result deleted. Enter the correct result and publish.");
     refreshAll();
 }
@@ -3543,6 +3590,61 @@ async function resetPasswordAction() {
     } catch (e) { fbErr(e); alert("Could not update the password. Check the connection and try again."); }
     finally { busy = false; }
 }
+</script>
+<script>
+// ---- Silent auto-update ------------------------------------------------------------------------------
+// When the app is opened from its web address, it quietly fetches the newest copy of this page. If the page
+// was changed on the host, the app reloads itself with the new version. Nothing is shown to the user.
+// It never reloads while a number is being typed or a save is running; it waits until that is finished.
+// (Entries not yet saved are kept on the phone, so they are still there after the reload.)
+(function () {
+    if (!/^https?:$/.test(location.protocol)) return;          // does nothing when the file is opened directly from the phone
+    var HASH_KEY = "dp_page_hash_v1", RELOAD_KEY = "dp_reload_ts_v1";
+    var MIN_GAP = 60 * 1000, EVERY = 10 * 60 * 1000;
+    var lastCheck = 0, checking = false, waiting = null;
+
+    function hashOf(t) {
+        var h = 2166136261;
+        for (var i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); }
+        return (h >>> 0).toString(16) + "-" + t.length;
+    }
+    function busyNow() {
+        try { if (typeof busy !== "undefined" && busy) return true; } catch (e) {}
+        var a = document.activeElement;
+        if (a && (a.tagName === "TEXTAREA" || (a.tagName === "INPUT" && !/^(button|checkbox|radio|submit)$/i.test(a.type || ""))) && a.value) return true;
+        return false;
+    }
+    function reloadNow() {
+        try { localStorage.setItem(RELOAD_KEY, String(Date.now())); } catch (e) {}
+        location.replace(location.origin + location.pathname + "?v=" + Date.now() + location.hash);
+    }
+    function tryReload() {
+        if (!waiting) return;
+        if (busyNow()) { setTimeout(tryReload, 8000); return; }
+        waiting = null;
+        reloadNow();
+    }
+    function check(force) {
+        var now = Date.now();
+        if (checking || (!force && now - lastCheck < MIN_GAP)) return;
+        checking = true; lastCheck = now;
+        fetch(location.origin + location.pathname + "?_=" + now, { cache: "no-store" })
+            .then(function (r) { return r.ok ? r.text() : Promise.reject(); })
+            .then(function (t) {
+                if (t.indexOf("<title>Dream Pro</title>") < 0) return;     // not our page (error page, wifi login page...)
+                var h = hashOf(t), old = null, last = 0;
+                try { old = localStorage.getItem(HASH_KEY); last = +localStorage.getItem(RELOAD_KEY) || 0; } catch (e) {}
+                try { localStorage.setItem(HASH_KEY, h); } catch (e) {}
+                if (old && old !== h && Date.now() - last > 20000) { waiting = true; tryReload(); }
+            })
+            .catch(function () {})
+            .then(function () { checking = false; });
+    }
+    window.addEventListener("load", function () { setTimeout(function () { check(true); }, 800); });
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) check(false); });
+    window.addEventListener("online", function () { check(false); });
+    setInterval(function () { if (!document.hidden) check(false); }, EVERY);
+})();
 </script>
 </body>
 </html>
