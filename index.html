@@ -235,8 +235,8 @@ table.stbl { width: 100%; border-collapse: collapse; table-layout: fixed; font-s
 .stbl td.sh small { font-size: 10px; color: #fff; opacity: .9; }
 .stbl td.sh-DR1 { background: linear-gradient(90deg, #ef6c00, #ffa726); }
 .stbl td.sh-LSK3 { background: linear-gradient(90deg, #00838f, #26c6da); }
-.stbl td.sh-DR6 { background: linear-gradient(90deg, #6a1b9a, #ab47bc); }
-.stbl td.sh-DR8 { background: linear-gradient(90deg, #c2185b, #f06292); }
+.stbl td.sh-DR6 { background: linear-gradient(90deg, #b71c1c, #ef5350); }
+.stbl td.sh-DR8 { background: linear-gradient(90deg, #4e342e, #a1887f); }
 .stbl td.net { background: #0d2a4d; color: #82d4ff; }
 .stbl td.clm { background: #4a1414; color: #ff8a80; }
 .stbl td.bal { background: #0e3b24; color: #69f0ae; font-size: 18px; }
@@ -301,8 +301,8 @@ table.stbl { width: 100%; border-collapse: collapse; table-layout: fixed; font-s
 .shhd small { font-size: 12px; opacity: .9; }
 .shhd.sh-DR1 { background: linear-gradient(90deg, #ef6c00, #ffa726); }
 .shhd.sh-LSK3 { background: linear-gradient(90deg, #00838f, #26c6da); }
-.shhd.sh-DR6 { background: linear-gradient(90deg, #6a1b9a, #ab47bc); }
-.shhd.sh-DR8 { background: linear-gradient(90deg, #c2185b, #f06292); }
+.shhd.sh-DR6 { background: linear-gradient(90deg, #b71c1c, #ef5350); }
+.shhd.sh-DR8 { background: linear-gradient(90deg, #4e342e, #a1887f); }
 
 /* ===== v29 ===== */
 .clock-strip { background: linear-gradient(90deg, #0d1b4c, #4a148c); text-align: center; padding: 6px 8px; border-bottom: 2px solid #333; }
@@ -535,8 +535,8 @@ body:not(.onhome) #saveEntryBtn, body:not(.onhome) #lockStatusLabel { display: n
 .wc-box .et { display: block; font-size: 9px; color: #666; }
 .shhd.wsh-DR1 { background: linear-gradient(90deg, #2e7d32, #66bb6a); }
 .shhd.wsh-LSK3 { background: linear-gradient(90deg, #1b5e20, #43a047); }
-.shhd.wsh-DR6 { background: linear-gradient(90deg, #33691e, #7cb342); }
-.shhd.wsh-DR8 { background: linear-gradient(90deg, #004d40, #2e7d32); }
+.shhd.wsh-DR6 { background: linear-gradient(90deg, #b71c1c, #ef5350); }
+.shhd.wsh-DR8 { background: linear-gradient(90deg, #4e342e, #a1887f); }
 .shhd.bsh-all { background: linear-gradient(90deg, #6a1b9a, #d81b60); }
 
 /* ===== v48: thicker, bolder text in Entry List, Winners List, Settlement and Team Bonus ===== */
@@ -664,6 +664,93 @@ body.typing .floating-menu-options { display: none !important; }
 html, body { overscroll-behavior: none; }
 .info-bar { flex: 0 0 auto; }
 .wc-prz2 { white-space: nowrap; }
+
+/* ===== v54: Entry List - every OK press shown as its own block ===== */
+.bhd { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; padding: 7px 10px; background: linear-gradient(90deg, #0d47a1, #1e88e5); color: #fff; font-size: 14px; font-weight: 900; border-radius: 8px 8px 0 0; }
+.bhd small { font-size: 11px; font-weight: 900; opacity: .95; }
+.btot { display: flex; justify-content: space-between; gap: 6px; padding: 6px 10px; background: #fff3c4; color: #5d4037; font-size: 12px; font-weight: 900; border: 1px solid #ccc; border-top: 2px solid #ff6f00; border-radius: 0 0 8px 8px; }
+.btot b { font-size: 15px; color: #b71c1c; }
+
+/* ===== v56: each shift has its own colour everywhere (blocks, headers, totals) ===== */
+.bhd.bs-DR1, .shhd.sh-DR1, .shhd.wsh-DR1, .shtot.sht-DR1 .st-h { background: linear-gradient(90deg, #e65100, #ffa726); color: #fff; }
+.btot.bt-DR1 { background: #fff0d9; border-top-color: #e65100; }
+.tsum.ts-DR1 { border-color: #e65100; box-shadow: 0 2px 10px #e6510066; }
+.tsum.ts-DR1 th { background: linear-gradient(90deg, #e65100, #ffa726); }
+.tsum.ts-DR1 tr.gt td { background: linear-gradient(90deg, #e65100, #ffa726); color: #fff; }
+.shtot.sht-DR1 { border-color: #e65100; background: linear-gradient(135deg, #e65100, #ffa726); }
+.bhd.bs-LSK3, .shhd.sh-LSK3, .shhd.wsh-LSK3, .shtot.sht-LSK3 .st-h { background: linear-gradient(90deg, #0d47a1, #42a5f5); color: #fff; }
+.btot.bt-LSK3 { background: #e3f0ff; border-top-color: #0d47a1; }
+.tsum.ts-LSK3 { border-color: #0d47a1; box-shadow: 0 2px 10px #0d47a166; }
+.tsum.ts-LSK3 th { background: linear-gradient(90deg, #0d47a1, #42a5f5); }
+.tsum.ts-LSK3 tr.gt td { background: linear-gradient(90deg, #0d47a1, #42a5f5); color: #fff; }
+.shtot.sht-LSK3 { border-color: #0d47a1; background: linear-gradient(135deg, #0d47a1, #42a5f5); }
+.bhd.bs-DR6, .shhd.sh-DR6, .shhd.wsh-DR6, .shtot.sht-DR6 .st-h { background: linear-gradient(90deg, #b71c1c, #ef5350); color: #fff; }
+.btot.bt-DR6 { background: #fdeaea; border-top-color: #b71c1c; }
+.tsum.ts-DR6 { border-color: #b71c1c; box-shadow: 0 2px 10px #b71c1c66; }
+.tsum.ts-DR6 th { background: linear-gradient(90deg, #b71c1c, #ef5350); }
+.tsum.ts-DR6 tr.gt td { background: linear-gradient(90deg, #b71c1c, #ef5350); color: #fff; }
+.shtot.sht-DR6 { border-color: #b71c1c; background: linear-gradient(135deg, #b71c1c, #ef5350); }
+.bhd.bs-DR8, .shhd.sh-DR8, .shhd.wsh-DR8, .shtot.sht-DR8 .st-h { background: linear-gradient(90deg, #4e342e, #a1887f); color: #fff; }
+.btot.bt-DR8 { background: #efebe9; border-top-color: #4e342e; }
+/* ===== v57: Winners List + banners use the same shift colours ===== */
+.shc-DR1 .wcard.win { border-color: #e65100; }
+.shc-DR1 .wcard.win .wc-head { background: linear-gradient(90deg, #e65100, #ffa726); }
+.shc-DR1 .wcard.win .wc-cols { background: #e65100; }
+.shc-DR1 .wcard.win .wc-num, .shc-DR1 .wcard.win .wc-tot { color: #e65100; }
+.shc-DR1 .wcard.win .wc-sum { background: #fff0d9; color: #e65100; }
+.entry-list.shc-DR1 .summary-box.win-end { background: linear-gradient(90deg, #e65100, #ffa726); color: #fff; }
+.shift-banner.sb-DR1 { background: linear-gradient(90deg, #e65100, #ffa726); }
+.shc-LSK3 .wcard.win { border-color: #0d47a1; }
+.shc-LSK3 .wcard.win .wc-head { background: linear-gradient(90deg, #0d47a1, #42a5f5); }
+.shc-LSK3 .wcard.win .wc-cols { background: #0d47a1; }
+.shc-LSK3 .wcard.win .wc-num, .shc-LSK3 .wcard.win .wc-tot { color: #0d47a1; }
+.shc-LSK3 .wcard.win .wc-sum { background: #e3f0ff; color: #0d47a1; }
+.entry-list.shc-LSK3 .summary-box.win-end { background: linear-gradient(90deg, #0d47a1, #42a5f5); color: #fff; }
+.shift-banner.sb-LSK3 { background: linear-gradient(90deg, #0d47a1, #42a5f5); }
+.shc-DR6 .wcard.win { border-color: #b71c1c; }
+.shc-DR6 .wcard.win .wc-head { background: linear-gradient(90deg, #b71c1c, #ef5350); }
+.shc-DR6 .wcard.win .wc-cols { background: #b71c1c; }
+.shc-DR6 .wcard.win .wc-num, .shc-DR6 .wcard.win .wc-tot { color: #b71c1c; }
+.shc-DR6 .wcard.win .wc-sum { background: #fdeaea; color: #b71c1c; }
+.entry-list.shc-DR6 .summary-box.win-end { background: linear-gradient(90deg, #b71c1c, #ef5350); color: #fff; }
+.shift-banner.sb-DR6 { background: linear-gradient(90deg, #b71c1c, #ef5350); }
+.shc-DR8 .wcard.win { border-color: #4e342e; }
+.shc-DR8 .wcard.win .wc-head { background: linear-gradient(90deg, #4e342e, #a1887f); }
+.shc-DR8 .wcard.win .wc-cols { background: #4e342e; }
+.shc-DR8 .wcard.win .wc-num, .shc-DR8 .wcard.win .wc-tot { color: #4e342e; }
+.shc-DR8 .wcard.win .wc-sum { background: #efebe9; color: #4e342e; }
+.entry-list.shc-DR8 .summary-box.win-end { background: linear-gradient(90deg, #4e342e, #a1887f); color: #fff; }
+.shift-banner.sb-DR8 { background: linear-gradient(90deg, #4e342e, #a1887f); }
+/* ===== v59: Winners card - amount in shift colour too, wrapper makes it work on every screen ===== */
+.shc-DR1 .wcard.win .wc-prize, .shc-DR1 .wcard.win .wc-box .et { color: #e65100; }
+.shc-LSK3 .wcard.win .wc-prize, .shc-LSK3 .wcard.win .wc-box .et { color: #0d47a1; }
+.shc-DR6 .wcard.win .wc-prize, .shc-DR6 .wcard.win .wc-box .et { color: #b71c1c; }
+.shc-DR8 .wcard.win .wc-prize, .shc-DR8 .wcard.win .wc-box .et { color: #4e342e; }
+/* ===== v58: no green left in Winners List totals ===== */
+.shtot.sht-DR1 .st-g { background: #fff; color: #e65100; }
+.shtot.sht-DR1 .st-g b { color: #e65100; }
+.shtot.sht-LSK3 .st-g { background: #fff; color: #0d47a1; }
+.shtot.sht-LSK3 .st-g b { color: #0d47a1; }
+.shtot.sht-DR6 .st-g { background: #fff; color: #b71c1c; }
+.shtot.sht-DR6 .st-g b { color: #b71c1c; }
+.shtot.sht-DR8 .st-g { background: #fff; color: #4e342e; }
+.shtot.sht-DR8 .st-g b { color: #4e342e; }
+.summary-box.win-end { background: linear-gradient(90deg, #6a1b9a, #d81b60); color: #fff; }
+.entry-list[class*="shc-"] .summary-box.win-end .summary-row { border-color: rgba(255,255,255,.6) !important; }
+.tsum.ts-DR8 { border-color: #4e342e; box-shadow: 0 2px 10px #4e342e66; }
+.tsum.ts-DR8 th { background: linear-gradient(90deg, #4e342e, #a1887f); }
+.tsum.ts-DR8 tr.gt td { background: linear-gradient(90deg, #4e342e, #a1887f); color: #fff; }
+.shtot.sht-DR8 { border-color: #4e342e; background: linear-gradient(135deg, #4e342e, #a1887f); }
+.stbl td.sh-LSK3 { background: linear-gradient(90deg, #0d47a1, #42a5f5); }
+.stbl td.sh-DR6 { background: linear-gradient(90deg, #b71c1c, #ef5350); }
+.stbl td.sh-DR8 { background: linear-gradient(90deg, #4e342e, #a1887f); }
+
+/* ===== v55: last entry (Team Activity) ===== */
+.act-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; background: #1e1e1e; border-bottom: 1px solid #333; font-size: 15px; font-weight: 900; }
+.act-row .an { color: #fff; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.act-row .at { text-align: right; white-space: nowrap; font-size: 14px; }
+.act-row .at small { display: block; font-size: 11px; color: #aaa; font-weight: 700; }
+.act-row.a-g .at { color: #69f0ae; } .act-row.a-y .at { color: #ffd54f; } .act-row.a-o .at { color: #ffab40; } .act-row.a-n .at { color: #90a4ae; }
 </style>
 </head>
 <body>
@@ -723,7 +810,7 @@ html, body { overscroll-behavior: none; }
                 </div>
             </div>
             <div class="input-container" id="inputFields"></div>
-            <div class="ok-row"><button type="button" class="paste-btn voice-btn" id="voiceBtn" onclick="toggleVoice()">🎤 Voice</button><button type="button" class="paste-btn photo-btn" id="photoBtn" onclick="photoNow()">📷 Photo</button><button type="button" class="paste-btn" id="pasteBtn" onclick="pasteNow()">📋 Paste</button><button type="button" class="ok-btn ok-inline" id="okBtn" onclick="addToPending()">✔ OK</button><input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="photoPicked(this)"></div>
+            <div class="ok-row"><button type="button" class="paste-btn voice-btn" id="voiceBtn" onclick="toggleVoice()">🎤 Voice</button><button type="button" class="paste-btn photo-btn" id="photoBtn" onclick="photoNow()">📷 Photo</button><button type="button" class="paste-btn" id="pasteBtn" onclick="pasteNow()">📋 Paste</button><button type="button" class="ok-btn ok-inline" id="okBtn" onclick="addToPending()">✔ OK</button><input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="photoPicked(this)"></div>
             <div id="pasteBox" class="paste-box" style="display:none;">
                 <div class="paste-bar"><button type="button" class="ok-btn" id="pasteOk" onclick="addFromPaste()">✔ OK</button><button type="button" class="paste-close" onclick="closePaste()">✖ Close</button></div>
                 <div id="voiceStat" class="voice-stat"></div>
@@ -843,6 +930,13 @@ html, body { overscroll-behavior: none; }
         <div class="note" style="padding:8px 4px;">Last 200 actions: results published or deleted, shifts locked or unlocked, commission changes, users created, blocked or unblocked, password resets. This page needs the Firebase rule for "audit".</div>
     </div>
 
+    <!-- TEAM ACTIVITY: last entry of every user (Main Admin: all, Main Sub Admin: his team) -->
+    <div id="panelActivity" class="screen-panel">
+        <div class="shift-banner"><span>👥 Team Activity</span><button class="title-share" onclick="renderActivity()">🔄 Refresh</button></div>
+        <div id="activityList"></div>
+        <div class="note" style="padding:8px 4px;">Shows when each user last saved an entry today. It does not show whether the app is open. Main Admin sees everyone, a Main Sub Admin sees only his own team.</div>
+    </div>
+
     <!-- 6b. TEAM BONUS (Main Admin + Main Sub Admin only) -->
     <div id="panelBonus" class="screen-panel">
         <div class="shift-banner" id="bonusBanner"></div>
@@ -944,6 +1038,7 @@ html, body { overscroll-behavior: none; }
     <button class="m7" id="searchBonusBtn" onclick="openSearch('bonus')" style="display:none;">🔍 Search Team Bonus <span>➔</span></button>
     <button class="m9" onclick="openSearch('settlement')">🔍 Search Ledger &amp; Settlement <span>➔</span></button>
     <button class="m6" id="bonusMenuBtn" onclick="navigateTo('panelBonus')" style="display:none;">💎 Team Bonus <span>➔</span></button>
+    <button class="m7" id="activityMenuBtn" onclick="navigateTo('panelActivity')" style="display:none;">👥 Team Activity <span>➔</span></button>
     <div class="menu-sep" id="adminMenuSep" style="display:none;"></div>
     <button class="m10" onclick="navigateTo('panelAdmin')" id="adminMenuBtn" style="display:none;">👑 Core Management <span>➔</span></button>
     <button class="m9" id="auditMenuBtn" onclick="navigateTo('panelAudit')" style="display:none;">📜 Audit Log <span>➔</span></button>
@@ -1264,6 +1359,7 @@ function startClockEngine() {
         let ch = ip.h; const cap = ch >= 12 ? "PM" : "AM"; ch = ch % 12 || 12;
         $("clkTime").innerText = pad(ch) + ":" + pad(ip.mi) + ":" + pad(ip.s) + " " + cap;
         $("clkDate").innerText = showDate(todayKey()) + " · " + weekday(todayKey());
+        if (currentUser && ip.s === 30 && (curPanel === "panelActivity" || curPanel === "panelDash")) { if (curPanel === "panelActivity") renderActivity(); else renderDash(); }
         if (currentUser && performance.now() - srvTry > 120000) syncTime();      // re-check the server time every 2 minutes
         if (currentUser) {
             if (todayKey() !== lastToday) { lastToday = todayKey(); normalizeSel(); renderDateChips(); startListeners(); refreshAll(); }
@@ -1402,6 +1498,7 @@ function enterApp(user, role) {
     $("adminMenuBtn").style.display = roleK === "main" ? "inline-flex" : "none";      // Core Management: Main Admin only
     $("adminMenuSep").style.display = roleK === "main" ? "block" : "none";
     $("bonusMenuBtn").style.display = isPriv() ? "inline-flex" : "none";
+    $("activityMenuBtn").style.display = isPriv() ? "inline-flex" : "none";
     $("mDash").style.display = roleK === "main" ? "inline-flex" : "none";           // Dashboard + Audit Log: Main Admin only
     $("auditMenuBtn").style.display = roleK === "main" ? "inline-flex" : "none";
     $("searchBonusBtn").style.display = isPriv() ? "inline-flex" : "none";      // Team Bonus: Main Admin + Main Sub Admin only
@@ -1459,7 +1556,8 @@ function navigateTo(id, mode, fromPop) {
     $("floatingMenuOptions").style.display = "none";
     if (id === "panelAdmin" && roleK !== "main") id = homePanel();
     if ((id === "panelDash" || id === "panelAudit") && roleK !== "main") id = homePanel();
-    if (id === "panelBonus" && !isPriv()) id = homePanel();             // Team Bonus: never for a Sub Admin      // Core Management is for the Main Admin only
+    if (id === "panelBonus" && !isPriv()) id = homePanel();
+    if (id === "panelActivity" && !isPriv()) id = homePanel();             // Team Bonus: never for a Sub Admin      // Core Management is for the Main Admin only
     if (!fromPop && id === curPanel && id !== "panelSearch") { refreshAll(); return; }
     document.querySelectorAll(".screen-panel").forEach(p => p.classList.remove("active"));
     $(id).classList.add("active");
@@ -1997,7 +2095,8 @@ function setVoiceUi(on) {
 }
 function appendToPasteBox(txt) {
     const ta = $("pasteText");
-    ta.value += (ta.value && !/\n$/.test(ta.value) ? "\n" : "") + txt + "\n";
+    // a separator line between voice phrases / photos (empty lines in pasted text do NOT split blocks)
+    ta.value += (ta.value.trim() ? (/\n$/.test(ta.value) ? "" : "\n") + "⎯⎯⎯⎯⎯⎯⎯⎯\n" : "") + txt + "\n";
     ta.scrollTop = ta.scrollHeight;
 }
 // v32: a spoken phrase that is only digits (135 22 / 13522 / 1 3 5 2 2 2 4 5 3 3 ...) is cut into one entry per line here.
@@ -2037,7 +2136,10 @@ function toggleVoice() {
     if (entryTarget(curShift()).locked) { alert("Shift is locked. It opens again after the result is published."); return; }
     // The browser's own voice needs an https link. When the app is opened as a file (or the browser has no voice), use the phone keyboard's mic instead.
     // opened as a downloaded file, or no browser voice: use the phone keyboard mic (as before). On the https link the app mic is used.
-    if (!SR || window.isSecureContext === false || location.protocol === "file:") { keyboardVoice(); return; }
+    if (!SR || window.isSecureContext === false || location.protocol === "file:") {
+        keyboardVoice(location.protocol === "file:" ? "ℹ App mic is off: the app was opened as a downloaded file, not from the web link. " : window.isSecureContext === false ? "ℹ App mic is off: the page is not https. " : "ℹ App mic is off: this browser / app window has no voice recognition (open the link in Chrome). ");
+        return;
+    }
     $("pasteBox").style.display = "block";
     voiceOn = true; setVoiceUi(true);
     $("voiceStat").innerText = "🎤 Listening… you can say several entries in one go (125 2 2 135 2 2), then pause.";
@@ -2166,8 +2268,8 @@ function photoPrep(file) {
     });
 }
 async function photoPicked(inp) {
-    const f = inp.files && inp.files[0];
-    if (!f) return;
+    const files = Array.from(inp.files || []);
+    if (!files.length) return;
     $("pasteBox").style.display = "block";
     const st = $("voiceStat");
     st.innerText = "📷 Loading the photo reader…";
@@ -2175,6 +2277,8 @@ async function photoPicked(inp) {
     try {
         const T = await loadTesseract();
         worker = await T.createWorker("eng", 1, { logger: m => { if (m.status === "recognizing text") st.innerText = "📷 Reading the photo " + tag + "… " + Math.round((m.progress || 0) * 100) + "%"; } });
+        for (let fi = 0; fi < files.length; fi++) {
+        const f = files[fi], pre = files.length > 1 ? "Photo " + (fi + 1) + "/" + files.length + " " : "";
         let prepped = null; try { prepped = await photoPrep(f); } catch (e) { console.error(e); }
         const DIG = "0123456789-+*=:./, x×", LET = "0123456789abcABCoOxXBlI-+*=:./, ×";
         // several reading attempts; the one that gives the most readable entries wins (digits-only wins a tie, so no stray letters)
@@ -2184,7 +2288,7 @@ async function photoPicked(inp) {
         plans.push([f, "6", DIG]);
         let best = null;
         for (let i = 0; i < plans.length; i++) {
-            tag = "(" + (i + 1) + "/" + plans.length + ")";
+            tag = pre + "(" + (i + 1) + "/" + plans.length + ")";
             await worker.setParameters({ tessedit_char_whitelist: plans[i][2], tessedit_pageseg_mode: plans[i][1], preserve_interword_spaces: "1" });
             const r = await worker.recognize(plans[i][0]);
             const k = ocrKeep(ocrClean(r.data.text || ""));
@@ -2197,7 +2301,8 @@ async function photoPicked(inp) {
         else {
             appendToPasteBox(all.replace(/\n$/, ""));
             const nOk = k.text ? k.text.split("\n").length : 0;
-            st.innerText = "📷 " + nOk + " lines read" + (k.unclear.length ? ", " + k.unclear.length + " lines NOT clear (they are at the end of the box, please correct them)" : "") + (k.skipped ? ", " + k.skipped + " other lines (time, date, names...) skipped" : "") + ". Handwriting can be misread: compare with the photo, correct, then tap ✔ OK.";
+            st.innerText = "📷 " + pre + nOk + " lines read" + (k.unclear.length ? ", " + k.unclear.length + " lines NOT clear (they are at the end of the box, please correct them)" : "") + (k.skipped ? ", " + k.skipped + " other lines (time, date, names...) skipped" : "") + ". Handwriting can be misread: compare with the photo, correct, then tap ✔ OK.";
+        }
         }
     } catch (e) {
         console.error(e);
@@ -2219,12 +2324,12 @@ function fixVoiceLines(txt) {
             const t = tokens[i];
             if (t.length >= 4 && t.length <= 6) {                      // number + count joined: 12244
                 const cs = t.slice(3), c = parseInt(cs, 10);
-                if (/^[1-9]0[1-9]$/.test(cs)) { cur = { n: t.slice(0, 3), c: [+cs[0], +cs[2]] }; ents.push(cur); }   // "2-2" heard as 202: 155202 -> 155 2-2
+                if (/^([1-9])0\1$/.test(cs)) { cur = { n: t.slice(0, 3), c: [+cs[0], +cs[2]] }; ents.push(cur); }   // "2-2" heard as 202: 155202 -> 155 2-2
                 else if (!(c >= 1 && c <= 100)) { ok = false; break; }
                 else { cur = { n: t.slice(0, 3), c: [c] }; ents.push(cur); }
             } else if (t.length === 3) {
                 if (cur && !cur.c.length && t === "100") cur.c.push(100);
-                else if (cur && !cur.c.length && /^[1-9]0[1-9]$/.test(t)) cur.c.push(+t[0], +t[2]);      // "2-2" heard as 202, "4-4" as 404
+                else if (cur && !cur.c.length && /^([1-9])0\1$/.test(t)) cur.c.push(+t[0], +t[2]);      // "2-2" heard as 202, "4-4" as 404
                 else { cur = { n: t, c: [] }; ents.push(cur); }
             } else if (t.length <= 2) {                                // a count for the number before it
                 const v = parseInt(t, 10);
@@ -2299,11 +2404,20 @@ function addFromPaste() {
     const txt = $("pasteText").value;
     if (!txt.trim()) { alert("Paste the numbers first."); return; }
     const sp = splitSame(fixVoiceLines(txt), $("sameSplit").checked);
-    const r = parsePasteText(sp.text);
-    retryBad(r);
+    // one OK press = one block. Only the separator line (added between voice phrases and between photos) starts a new block
+    const r = { rows: [], bad: [], notes: [], clamped: false }, parts = [];
+    sp.text.split(/^[ \t]*⎯{3,}[ \t]*$/m).filter(t => t.trim()).forEach(t => {
+        const q = parsePasteText(t); retryBad(q);
+        parts.push(q.rows); q.rows.forEach(x => r.rows.push(x));
+        q.bad.forEach(x => r.bad.push(x)); q.notes.forEach(x => r.notes.push(x)); if (q.clamped) r.clamped = true;
+    });
     if (r.rows.length) {
         const stamp = Date.now();
-        r.rows.forEach((x, i) => pending.push({ pid: "p" + stamp + "_" + i + "_" + Math.random().toString(36).slice(2, 6), shift: shift, type: x.type, box: x.box, number: x.number, count: x.count, ts: stamp + i }));
+        let off = 0, gi = 0;
+        parts.forEach(rows => {
+            rows.forEach((x, i) => pending.push({ pid: "p" + stamp + "_" + (gi++) + "_" + Math.random().toString(36).slice(2, 6), shift: shift, type: x.type, box: x.box, number: x.number, count: x.count, ts: stamp + off + i }));
+            if (rows.length) off += rows.length + 1;      // a gap of 2 in the stamp = a new block
+        });
         savePending();
         renderPending();
         updateLockLabels();
@@ -2362,7 +2476,14 @@ function renderPending() {
     if (!has) { $("pendingRows").innerHTML = ""; return; }
     const ents = pending.map(pendEntry).sort((a, b) => b.ts - a.ts);
     $("pendTitle").innerText = "📋 Pending List · " + ents.length + " (not saved)";
-    $("pendingRows").innerHTML = pendTableHTML(ents);
+    // every OK press is its own block: name, shift, date, time, its rows and its own total
+    const mny = n => (Math.round(n * 100) / 100).toString();
+    $("pendingRows").innerHTML = batchesOf(ents).map(b => {
+        const bs = sumEntries(b), f = b[0], tg = entryTarget(f.shift);
+        return `<div class="bhd bs-${f.shift}"><span>👤 ${esc(currentUser.toUpperCase())} · ${esc(shiftObj(f.shift).label)}</span><small>${showDate(tg.date)} · ${esc(timeOf(f))}</small></div>` +
+            pendTableHTML(b) +
+            `<div class="btot bt-${f.shift}"><span>Cnt <b>${bs.count}</b></span><span>Comm <b>${mny(bs.comm)}</b></span><span>Net <b>${mny(bs.net)}</b></span><span>Total <b>${mny(bs.total)}</b></span></div>`;
+    }).join("");
 }
 // Save Entry: everything in the Pending List is saved at once and goes to the Entry List
 const SAVE_CHUNK = 2;
@@ -2407,7 +2528,7 @@ function saveEntry() {
         if (tg.locked) { if (!lockedShifts.includes(p.shift)) lockedShifts.push(p.shift); return; }
         const fin = calc(p.type, p.count, currentUser);
         writes.push({ p: p, e: { id: "e" + p.pid, user: currentUser, date: tg.date, shift: p.shift, type: p.type, box: p.box,
-            number: p.number, count: p.count, total: fin.total, comm: fin.comm, net: fin.net, ts: stamp + k, uid: AU.auth.currentUser.uid, chain: myChain } });
+            number: p.number, count: p.count, total: fin.total, comm: fin.comm, net: fin.net, ts: p.ts || (stamp + k), uid: AU.auth.currentUser.uid, chain: myChain } });
         savedPids.add(p.pid); lastDate = tg.date; k++;
     });
     if (!writes.length) { alert("Shift is locked. It opens again after the result is published. Your list is kept."); return; }
@@ -2575,6 +2696,17 @@ function delCellHTML(e) {
     if (!c.show) return "";
     return c.enabled ? `<button class="xbtn" onclick="deleteEntry('${e.id}')">X</button>` : `<button class="xbtn" disabled title="Locked">🔒</button>`;
 }
+// One OK press gives its entries consecutive time stamps (stamp, stamp+1, ...). Entries of the same user and shift
+// whose stamps follow on from each other belong to the same batch.
+function batchesOf(list) {
+    const byKey = {}, out = [];
+    list.slice().sort((a, b) => a.ts - b.ts).forEach(e => {
+        const k = e.user + "|" + e.date + "|" + e.shift, cur = byKey[k];
+        if (cur && e.ts - cur.last <= 1) { cur.rows.push(e); cur.last = e.ts; }
+        else { const g = { rows: [e], last: e.ts }; byKey[k] = g; out.push(g); }
+    });
+    return out.sort((a, b) => b.rows[0].ts - a.rows[0].ts).map(g => g.rows);
+}
 function entryTableHTML(list, canDel, withFoot, showNames) {
     const money = n => (Math.round(n * 100) / 100).toString();   // compact: no ₹ sign inside cells
     const head = `<colgroup><col style="width:17%"><col style="width:18%"><col style="width:10%"><col style="width:14%"><col style="width:15%"><col style="width:15%"><col style="width:11%"></colgroup>` +
@@ -2589,14 +2721,21 @@ function entryTableHTML(list, canDel, withFoot, showNames) {
         `<td class="xc">${canDel ? delCellHTML(e) : ""}</td></tr>`;
     const tbl = rows => `<div class="tbl-wrap"><table class="etbl">${head}<tbody>${rows.map(rowHTML).join("")}</tbody></table></div>`;
     if (!showNames) return tbl(list) + (withFoot ? typeSummaryHTML(list) : "");
-    // several users: every user gets his own list with his own totals underneath; then one grand total for all of them
+    // several users: every user gets his own list. Inside it, every OK press (batch) is shown separately
+    // with name, date, shift and its own total; then the user's total, then one grand total for all of them.
     const order = [];
     list.forEach(e => { if (!order.includes(e.user)) order.push(e.user); });
     let h = "";
     order.forEach(u => {
         const ul = list.filter(e => e.user === u), us = sumEntries(ul);
-        h += `<div class="ugrp"><span>👤 ${esc(u.toUpperCase())}${roleTag(u)}</span><span class="ug-s">Cnt ${us.count} · Net ${money(us.net)}</span></div>` +
-            tbl(ul) + (withFoot ? typeSummaryHTML(ul) : "");
+        h += `<div class="ugrp"><span>👤 ${esc(u.toUpperCase())}${roleTag(u)}</span><span class="ug-s">Cnt ${us.count} · Net ${money(us.net)}</span></div>`;
+        batchesOf(ul).forEach(b => {
+            const bs = sumEntries(b), f = b[0];
+            h += `<div class="bhd bs-${f.shift}"><span>👤 ${esc(u.toUpperCase())} · ${esc(shiftObj(f.shift).label)}</span><small>${showDate(f.date)} · ${esc(timeOf(f))}</small></div>` +
+                tbl(b) +
+                `<div class="btot bt-${f.shift}"><span>Cnt <b>${bs.count}</b></span><span>Comm <b>${money(bs.comm)}</b></span><span>Net <b>${money(bs.net)}</b></span><span>Total <b>${money(bs.total)}</b></span></div>`;
+        });
+        h += (withFoot ? typeSummaryHTML(ul) : "");
     });
     if (withFoot && order.length > 1) h += `<div class="ugrp utot"><span>👥 ALL USERS TOTAL</span><span class="ug-s">${order.length} users</span></div>` + typeSummaryHTML(list);
     return h;
@@ -2619,7 +2758,8 @@ function typeSummaryHTML(list) {
         rows += `<tr><td class="ty ${d[2]}">${d[1]}</td><td>${x.count}</td><td class="cm">${m(x.comm)}</td><td class="nt">${m(x.net)}</td><td class="tt">${m(x.total)}</td></tr>`;
     });
     rows += `<tr class="gt"><td class="ty">TOTAL</td><td>${s.count}</td><td class="cm">${m(s.comm)}</td><td class="nt">${m(s.net)}</td><td class="tt">${m(s.total)}</td></tr>`;
-    return `<table class="tsum"><thead><tr><th>Type</th><th>Total Count</th><th>Comm</th><th>Total Net</th><th>Total Amt</th></tr></thead><tbody>${rows}</tbody></table>`;
+    const shs = [...new Set(list.map(e => e.shift))], tc = shs.length === 1 ? " ts-" + shs[0] : "";
+    return `<table class="tsum${tc}"><thead><tr><th>Type</th><th>Total Count</th><th>Comm</th><th>Total Net</th><th>Total Amt</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 function winOf(e, res) {
     if (!res || !res.published) return null;
@@ -2702,13 +2842,14 @@ function groupWinners(rows) {                           // one group per sub adm
 }
 function winnersHTML(rows, byUser, canDel) {
     const m = n => (Math.round(n * 100) / 100).toString();
-    return groupWinners(rows).map(g => {
+    const shc = rows.length ? rows[0].e.shift : "";
+    return `<div class="shc-${shc}">` + groupWinners(rows).map(g => {
         const tw = g.rs.reduce((a, r) => a + r.w.win, 0), tc = g.rs.reduce((a, r) => a + r.w.comm, 0);
         return `<div class="wcard win${canDel ? " hasx" : ""}"><div class="wc-head"><span>👤 ${esc(g.u.toUpperCase())}${roleTag(g.u)}</span><span class="wc-prz pz-10">🏆 ${g.rs.length} wins</span></div>` +
             `<div class="wc-cols"><span>Prize</span><span>Number</span><span>Cnt</span><span>Amount</span><span>Comm</span><span>Total</span>${canDel ? '<span class="wc-x"></span>' : ""}</div>` +
             g.rs.map(r => winRowHTML(r, canDel)).join("") +
             `<div class="wc-sum"><span>Total</span><span></span><span>${g.rs.reduce((a, r) => a + r.e.count, 0)}</span><span>${m(tw)}</span><span>${m(tc)}</span><span>${m(tw + tc)}</span>${canDel ? '<span class="wc-x"></span>' : ""}</div></div>`;
-    }).join("");
+    }).join("") + `</div>`;
 }
 function resultCardHTML(dateKey, shiftCode, resMap) {
     const sh = shiftObj(shiftCode), res = (resMap || db.results)[dateKey + "|" + shiftCode], pub = res && res.published;
@@ -2740,6 +2881,7 @@ function refreshAll() {
     renderResultPanel();
     renderSettlement();
     if (curPanel === "panelBonus") renderBonus();
+    if (curPanel === "panelActivity") renderActivity();
     if (curPanel === "panelDash") renderDash();
     renderHomeTotal();
     renderPending();
@@ -2757,6 +2899,7 @@ function bannerHTML(date, shift) {
 }
 function renderEntryList() {
     $("listBanner").innerHTML = bannerHTML(selDate, curShift());
+    $("listBanner").className = "shift-banner" + (curShift() !== "ALL" ? " sb-" + curShift() : "");
     $("listSummary").style.display = "none";
     if (curShift() === "ALL") {
         const users = scopeUsers();
@@ -2774,8 +2917,8 @@ function renderEntryList() {
     const list = getEntries(selDate, curShift(), scopeUsers()).sort((a, b) => b.ts - a.ts);
     $("entryList").innerHTML = list.length ? entryTableHTML(list, true, true, true) : '<div class="empty-note">No entries yet.</div>';
 }
-function shiftTotBox(label, w, c) {
-    return `<div class="shtot"><div class="st-h">🏆 ${esc(label)} · TOTAL</div>` +
+function shiftTotBox(label, w, c, code) {
+    return `<div class="shtot sht-${code}"><div class="st-h">🏆 ${esc(label)} · TOTAL</div>` +
         `<div class="st-r"><span>Total Winnings</span><b>${fmt(w)}</b></div>` +
         `<div class="st-r"><span>Winning Commission</span><b>${fmt(c)}</b></div>` +
         `<div class="st-r st-g"><span>TOTAL (WIN + COMM)</span><b>${fmt(w + c)}</b></div></div>`;
@@ -2783,20 +2926,22 @@ function shiftTotBox(label, w, c) {
 function renderWinners() {
     const shift = curShift(), div = $("winnersList"), users = scopeUsers();
     $("winBanner").innerHTML = bannerHTML(selDate, shift);
+    $("winBanner").className = "shift-banner" + (shift !== "ALL" ? " sb-" + shift : "");
+    div.className = "entry-list" + (shift !== "ALL" ? " shc-" + shift : "");
     const set = (w, c, t) => div.insertAdjacentHTML("beforeend",
         `<div class="summary-box win-end"><div class="summary-row"><span>${shift === "ALL" ? "ALL SHIFTS WINNINGS" : "TOTAL WINNINGS"}:</span> <span>${fmt(w)}</span></div>` +
         `<div class="summary-row"><span>WINNING COMMISSION:</span> <span>${fmt(c)}</span></div>` +
-        `<div class="summary-row" style="border-top:2px solid #000; margin-top:4px; padding-top:4px; font-size:17px;"><span>TOTAL (WIN + COMM):</span> <span>${fmt(t)}</span></div></div>`);
+        `<div class="summary-row" style="border-top:2px solid rgba(255,255,255,.6); margin-top:4px; padding-top:4px; font-size:17px;"><span>TOTAL (WIN + COMM):</span> <span>${fmt(t)}</span></div></div>`);
     if (shift === "ALL") {
         let html = "", tw = 0, tc = 0;
         SHIFTS.forEach(sh => {
             const res = db.results[selDate + "|" + sh.code];
-            html += `<div class="shhd wsh-${sh.code}"><span>🏆 ${esc(sh.label)}</span></div><div class="srch-body">`;
+            html += `<div class="shhd wsh-${sh.code}"><span>🏆 ${esc(sh.label)}</span></div><div class="srch-body shc-${sh.code}">`;
             if (!res || !res.published) html += '<div class="empty-note">Result not published yet.</div>';
             else {
                 const w = winnersFor(getEntries(selDate, sh.code, users), res);
                 tw += w.tw; tc += w.tc;
-                html += w.rows.length ? winnersHTML(w.rows, users.length > 1, false) + shiftTotBox(sh.label, w.tw, w.tc) : '<div class="empty-note">No winners.</div>';
+                html += w.rows.length ? winnersHTML(w.rows, users.length > 1, false) + shiftTotBox(sh.label, w.tw, w.tc, sh.code) : '<div class="empty-note">No winners.</div>';
             }
             html += `</div>`;
         });
@@ -3084,6 +3229,34 @@ function renderHomeTotal() {
     if (tm.count) h += `<div class="note" style="padding:6px 2px;">Tomorrow's draws: Cnt ${tm.count} · Net ${m(tm.net)} · Total ${m(tm.total)}</div>`;
     el.innerHTML = h;
 }
+// ---------- TEAM ACTIVITY: last entry saved by each user ----------
+function saveMs(e) { return (e.st && typeof e.st.toMillis === "function") ? e.st.toMillis() : (e.ts || 0); }
+function activityUsers() { return roleK === "main" ? visibleUsers() : descendants(currentUser); }
+function activityHTML(users) {
+    const now = nowMs(), ip = istParts(), dayStart = Date.UTC(ip.y, ip.mo, ip.d) - 19800000;
+    const rows = users.map(u => {
+        let last = 0, cnt = 0;
+        db.entries.forEach(e => { if (e.user !== u) return; const m = saveMs(e); if (m >= dayStart) cnt++; if (m > last) last = m; });
+        return { u: u, last: last >= dayStart ? last : 0, cnt: cnt };
+    }).sort((a, b) => (b.last - a.last) || (a.u < b.u ? -1 : 1));
+    if (!rows.length) return '<div class="empty-note">No users.</div>';
+    return rows.map(r => {
+        let cls = "a-n", dot = "⚪", t = "No entry today", sub = "";
+        if (r.last) {
+            const mins = Math.max(0, Math.floor((now - r.last) / 60000));
+            cls = mins <= 10 ? "a-g" : mins <= 60 ? "a-y" : "a-o";
+            dot = mins <= 10 ? "🟢" : mins <= 60 ? "🟡" : "🟠";
+            const d = new Date(r.last + 19800000); let h = d.getUTCHours(); const ap = h >= 12 ? "PM" : "AM"; h = h % 12 || 12;
+            t = h + ":" + pad(d.getUTCMinutes()) + " " + ap;
+            sub = (mins < 1 ? "just now" : mins < 60 ? mins + " min ago" : Math.floor(mins / 60) + " h " + (mins % 60) + " min ago") + " · " + r.cnt + " entries today";
+        }
+        return `<div class="act-row ${cls}"><span class="an">${dot} ${esc(r.u.toUpperCase())}${roleTag(r.u)}</span><span class="at">${esc(t)}<small>${esc(sub)}</small></span></div>`;
+    }).join("");
+}
+function renderActivity() {
+    if (!isPriv()) return;
+    $("activityList").innerHTML = activityHTML(activityUsers());
+}
 // ---------- MAIN ADMIN DASHBOARD ----------
 function renderDash() {
     const el = $("dashBody");
@@ -3109,6 +3282,7 @@ function renderDash() {
         `<div class="pay-line" style="text-align:left;">Shifts with a pending result count as 0 claims for now.</div></div>`;
     const tm = sumEntries(getEntries(addDays(t, 1), "ALL", users));
     h += `<div class="note" style="padding:8px 4px;">Tomorrow's draws so far: ${tm.count} count · Net ${fmt(tm.net)}<br>📡 Entries loaded on this phone: ${db.entries.length}. The free Firebase plan allows 50,000 reads a day, every app opening reads about this many. Check Firebase console → Usage now and then.</div>`;
+    h += `<div class="shift-banner" style="margin-top:12px;"><span>👥 Last Entry · Today</span></div>` + activityHTML(users);
     el.innerHTML = h;
 }
 // ---------- AUDIT LOG ----------
@@ -3422,7 +3596,7 @@ async function runSearch() {
             else {
                 const w = winnersFor(getEntries(date, sc, users, src), res);
                 tw += w.tw; tc += w.tc;
-                out += w.rows.length ? winnersHTML(w.rows, users.length > 1) + shiftTotBox(shiftObj(sc).label, w.tw, w.tc) : '<div class="empty-note">No winners.</div>';
+                out += w.rows.length ? winnersHTML(w.rows, users.length > 1) + shiftTotBox(shiftObj(sc).label, w.tw, w.tc, sc) : '<div class="empty-note">No winners.</div>';
             }
             out += `</div>`;
         });
