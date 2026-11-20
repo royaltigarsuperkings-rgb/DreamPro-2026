@@ -751,6 +751,45 @@ html, body { overscroll-behavior: none; }
 .act-row .at { text-align: right; white-space: nowrap; font-size: 14px; }
 .act-row .at small { display: block; font-size: 11px; color: #aaa; font-weight: 700; }
 .act-row.a-g .at { color: #69f0ae; } .act-row.a-y .at { color: #ffd54f; } .act-row.a-o .at { color: #ffab40; } .act-row.a-n .at { color: #90a4ae; }
+
+/* ===== v60: colourful Shift / View selectors, clear numbers in Winners List ===== */
+.info-row { color: #ffd54f; font-size: 15px; font-weight: 900; }
+#shiftSelect, #scopeSelect { font-size: 16px; font-weight: 900; color: #fff; border: 2px solid #fff; border-radius: 10px; padding: 6px 6px; box-shadow: 0 2px 8px rgba(0,0,0,.5); text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+#shiftSelect { background: linear-gradient(90deg, #00897b, #26c6da); border-color: #b2ebf2; }
+#scopeSelect { background: linear-gradient(90deg, #e65100, #e91e63); border-color: #ffd54f; }
+#shiftSelect option, #scopeSelect option { background: #1b1d26; color: #fff; font-weight: 800; }
+#searchShift, #searchScope { font-size: 16px; font-weight: 900; color: #fff; border: 2px solid #fff; border-radius: 10px; background: linear-gradient(90deg, #6a1b9a, #1e88e5); }
+#searchShift option, #searchScope option { background: #1b1d26; color: #fff; }
+
+/* Winners List numbers: strong, clear colours (no faded orange) */
+.entry-list .wcard.win .wc-prize { color: #1b5e20 !important; font-size: 17px; -webkit-text-stroke: .7px currentColor; }
+.entry-list .wcard.win .wc-comm { color: #bf360c !important; font-size: 17px; -webkit-text-stroke: .7px currentColor; }
+.entry-list .wcard.win .wc-tot { color: #0d1b4c !important; font-size: 18px; -webkit-text-stroke: .8px currentColor; }
+.entry-list .wcard.win .wc-box .et { color: #0d47a1 !important; font-weight: 900; }
+.entry-list .wcard.win .wc-sum { background: #fff3c4 !important; color: #0d1b4c !important; font-size: 16px; -webkit-text-stroke: .7px currentColor; }
+.entry-list .wcard.win .wc-num { -webkit-text-stroke: .9px currentColor; }
+/* shift total boxes: numbers white on the coloured body, dark on the white total line */
+.shtot .st-r { font-size: 17px; text-shadow: 0 1px 3px rgba(0,0,0,.45); }
+.shtot .st-r b { color: #fff !important; font-size: 24px; -webkit-text-stroke: .6px currentColor; text-shadow: 0 2px 4px rgba(0,0,0,.6); }
+.shtot .st-g { text-shadow: none; }
+.shtot .st-g b { font-size: 26px; text-shadow: none; }
+.shtot.sht-DR1 .st-g b { color: #bf360c !important; }
+.shtot.sht-LSK3 .st-g b { color: #0d47a1 !important; }
+.shtot.sht-DR6 .st-g b { color: #b71c1c !important; }
+.shtot.sht-DR8 .st-g b { color: #3e2723 !important; }
+/* the all-shifts winnings box at the end of the list */
+.summary-box.win-end { -webkit-text-stroke: .6px currentColor; }
+.summary-box.win-end .summary-row span:last-child { font-size: 22px; text-shadow: 0 2px 4px rgba(0,0,0,.45); }
+
+/* ===== v61: new selector colours, clear Settlement numbers ===== */
+#shiftSelect { background: linear-gradient(90deg, #2e7d32, #9ccc65) !important; border-color: #ccff90 !important; color: #fff !important; }
+#scopeSelect { background: linear-gradient(90deg, #4527a0, #7c4dff) !important; border-color: #d1c4e9 !important; color: #fff !important; }
+.info-row #shiftWrap, .info-row #scopeWrap { color: #fff; }
+/* Settlement table: Net Entry, Claims+Comm and Balance columns, clear and bold */
+.stbl td.net { background: #e3f2fd !important; color: #0d47a1 !important; font-size: 19px; -webkit-text-stroke: .8px currentColor; }
+.stbl td.clm { background: #fff3c4 !important; color: #b71c1c !important; font-size: 19px; -webkit-text-stroke: .8px currentColor; }
+.stbl td.bal { background: #c8f7dc !important; color: #00531f !important; font-size: 19px; -webkit-text-stroke: .8px currentColor; }
+.stbl tr.tot td.net, .stbl tr.tot td.clm, .stbl tr.tot td.bal { background: linear-gradient(90deg, #ff6f00, #e91e63) !important; color: #fff !important; }
 </style>
 </head>
 <body>
