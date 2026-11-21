@@ -296,6 +296,22 @@ table.stbl { width: 100%; border-collapse: collapse; table-layout: fixed; font-s
 .as-money .m-c { background: linear-gradient(90deg, #ef6c00, #ffb300); color: #2b1600; }
 .as-money .m-n { background: linear-gradient(90deg, #00a152, #69f0ae); color: #00331a; }
 
+/* ===== v100: ALL SHIFTS gold total box (strong text) ===== */
+.summary-box.allgold, .summary-box.win-end.allgold { background: linear-gradient(135deg, #ffe082, #ffc107 45%, #ff9800) !important; color: #2b1400 !important; border: 3px solid #b8860b; border-radius: 10px !important; padding: 14px !important; box-shadow: 0 3px 10px rgba(0,0,0,.45); -webkit-text-stroke: .6px currentColor; }
+.summary-box.allgold .summary-row { font-size: 18px !important; font-weight: 900 !important; letter-spacing: .4px; margin-bottom: 6px; }
+.summary-box.allgold .summary-row span:last-child { font-size: 24px; font-weight: 900; color: #1a0a00; }
+.summary-box.allgold .summary-row.ag-total { border-top: 3px solid #5d2e00 !important; margin-top: 8px !important; padding: 8px 10px !important; border-radius: 8px; background: #1a237e; color: #fff176 !important; font-size: 19px !important; -webkit-text-stroke: .4px currentColor; }
+.summary-box.allgold .summary-row.ag-total span:last-child { color: #fff; font-size: 28px; }
+
+/* ===== v100: number limit ===== */
+.lim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.lim-grid label { font-size: 13px; font-weight: 900; color: #ffe082; }
+.ld-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; margin-bottom: 5px; border-radius: 8px; background: #263238; color: #fff; font-size: 16px; font-weight: 900; }
+.ld-row small { display: block; font-size: 11px; color: #b0bec5; font-weight: 700; }
+.ld-row b { font-size: 20px; }
+.ld-row.ld-full { background: #b71c1c; }
+.ld-row.ld-near { background: #e65100; }
+
 /* ===== v28: all-shifts view headers ===== */
 .shhd { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding: 10px 14px; border-radius: 8px 8px 0 0; color: #fff; font-size: 18px; font-weight: 900; letter-spacing: .5px; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
 .shhd small { font-size: 12px; opacity: .9; }
@@ -748,6 +764,7 @@ html, body { overscroll-behavior: none; }
 /* ===== v55: last entry (Team Activity) ===== */
 .act-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; background: #1e1e1e; border-bottom: 1px solid #333; font-size: 15px; font-weight: 900; }
 .act-row .an { color: #fff; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.onl-head { padding: 10px 12px; background: #1b5e20; color: #fff; font-size: 16px; font-weight: 900; border-radius: 8px; margin-bottom: 6px; }
 .act-row .at { text-align: right; white-space: nowrap; font-size: 14px; }
 .act-row .at small { display: block; font-size: 11px; color: #aaa; font-weight: 700; }
 .act-row.a-g .at { color: #69f0ae; } .act-row.a-y .at { color: #ffd54f; } .act-row.a-o .at { color: #ffab40; } .act-row.a-n .at { color: #90a4ae; }
@@ -973,7 +990,7 @@ html, body { overscroll-behavior: none; }
     <div id="panelActivity" class="screen-panel">
         <div class="shift-banner"><span>👥 Team Activity</span><button class="title-share" onclick="renderActivity()">🔄 Refresh</button></div>
         <div id="activityList"></div>
-        <div class="note" style="padding:8px 4px;">Shows when each user last saved an entry today. It does not show whether the app is open. Main Admin sees everyone, a Main Sub Admin sees only his own team.</div>
+        <div class="note" style="padding:8px 4px;">🟢 = the app is open on that phone right now (seen in the last 5 minutes; it updates every 3 minutes, and only while the app is on the screen). The time on the right is the last saved entry today. Main Admin sees everyone, a Main Sub Admin sees only his own team.</div>
     </div>
 
     <!-- 6b. TEAM BONUS (Main Admin + Main Sub Admin only) -->
@@ -994,6 +1011,39 @@ html, body { overscroll-behavior: none; }
             <input type="number" id="admRateGeneral" value="20" min="0" max="100" step="0.5" class="admin-input">
             <div class="note">1D is fixed for everyone: ₹12 total, ₹1 commission.</div>
             <button class="admin-btn" onclick="updateRatesAction()">Apply New Rate</button>
+        </div>
+
+        <!-- v100: Number Limit: Main Admin only -->
+        <div class="admin-row" id="limitSection" style="display:none;">
+            <div class="admin-section-title" style="color:#ffd54f;">🔢 Number Limit (auto close)</div>
+            <div class="note">Highest total count allowed on ONE number (all users together), for each draw. First type the limits and the special numbers, then press Turn ON. While it is OFF nothing is limited. 0 = no limit for that type. The ALL box is used for every type whose own box is 0. Change the values any time. You can also Close / Open any number by hand below. The limit is checked by the Firebase server on every save, so it works even when the Main Admin app is closed. A user whose count is more than what is left gets only the remaining count; a full number is refused.</div>
+            <div class="lim-grid">
+                <div><label>1D (A/B/C)</label><input type="number" id="limL1" min="0" step="1" class="admin-input" oninput="this.dataset.dirty=1"></div>
+                <div><label>2D (AB/AC/BC)</label><input type="number" id="limL2" min="0" step="1" class="admin-input" oninput="this.dataset.dirty=1"></div>
+                <div><label>3D Straight</label><input type="number" id="limL3" min="0" step="1" class="admin-input" oninput="this.dataset.dirty=1"></div>
+                <div><label>Box</label><input type="number" id="limLB" min="0" step="1" class="admin-input" oninput="this.dataset.dirty=1"></div>
+            </div>
+            <label style="color:#ffe082; font-size:13px; font-weight:900;">ALL (one limit for every type that has none of its own, 0 = none)</label>
+            <input type="number" id="limLA" min="0" step="1" class="admin-input" oninput="this.dataset.dirty=1">
+            <button class="admin-btn" onclick="saveLimitsAction()">💾 Save Limits (keeps ON / OFF as it is)</button>
+            <div id="limShiftBox" style="margin-top:10px;"></div>
+            <button class="admin-btn" style="background:#6a1b9a;" onclick="rebuildLoadsAction()">🔄 Recount numbers (only if counts look wrong)</button>
+            <div class="admin-section-title" style="margin-top:14px;">⭐ Special numbers (limit / close)</div>
+            <div class="note">Choose the type, type ONE or MANY numbers (separated by space, comma or new line), then either give them their own limit or close them. Choose one shift or all shifts. It works every day and is checked by the Firebase server. A number has ONE special setting; saving it again replaces the old one. Limit empty or 0 = NO limit for these numbers. Remove a number from the list below to go back to the normal limit.</div>
+            <label>Type</label>
+            <select id="nlType" class="admin-select"><option value="1D">1D (1 digit)</option><option value="2D">2D (2 digits)</option><option value="3D">3D Straight (3 digits)</option><option value="Box">Box (3 digits)</option></select>
+            <label>Shift</label>
+            <select id="nlShift" class="admin-select"></select>
+            <label>Numbers</label>
+            <textarea id="nlNum" rows="3" class="admin-input" style="font-size:16px;" placeholder="e.g. 123 456 789" oninput="this.value=this.value.replace(/[^0-9 ,\n]/g,'')"></textarea>
+            <label style="color:#ffe082; font-size:13px;">Limit for these numbers (empty or 0 = no limit)</label>
+            <input type="text" inputmode="numeric" id="nlVal" class="admin-input" oninput="this.value=this.value.replace(/\D/g,'')">
+            <button class="admin-btn" style="background:#ef6c00;" onclick="saveNumLimitAction(false)">⭐ Save limit for these numbers</button>
+            <button class="admin-btn" style="background:#b71c1c;" onclick="saveNumLimitAction(true)">🔒 Close these numbers</button>
+            <div id="nlList" style="margin-top:8px;"></div>
+            <div class="admin-section-title" style="margin-top:14px;">📊 Number Load (highest first)</div>
+            <select id="loadShift" class="admin-select" onchange="renderLimits()"></select>
+            <div id="loadList"></div>
         </div>
 
         <!-- Add New User: Main Admin only -->
@@ -1086,7 +1136,7 @@ html, body { overscroll-behavior: none; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
 import { initializeAuth, getAuth, browserLocalPersistence, browserSessionPersistence, inMemoryPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
-import { getFirestore, initializeFirestore, memoryLocalCache, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch, onSnapshot, query, where, limit, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+import { getFirestore, initializeFirestore, memoryLocalCache, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch, onSnapshot, query, where, limit, orderBy, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 const firebaseConfig = {
     apiKey: "AIzaSyD9aLUW9-R-IxTPRiT04cUw5CEFLREDYew",
     authDomain: "dream-pro-95b6a.firebaseapp.com",
@@ -1110,7 +1160,7 @@ window.AU = { auth, secAuth, signInWithEmailAndPassword, createUserWithEmailAndP
 let fs;
 try { fs = initializeFirestore(app, { localCache: memoryLocalCache(), experimentalAutoDetectLongPolling: true }); }
 catch (e) { fs = getFirestore(app); }
-window.FB = { fs, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch, onSnapshot, query, where, limit, orderBy, serverTimestamp };
+window.FB = { fs, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch, onSnapshot, query, where, limit, orderBy, serverTimestamp, increment };
 window.dispatchEvent(new Event("fb-ready"));
 </script>
 <script>
@@ -1267,7 +1317,7 @@ function passHash(u, p) { return sha256(unescape(encodeURIComponent(u + ":" + p)
 
 // ---------- FIREBASE DATA LAYER ----------
 // Everything below is shared live between all devices through Firestore.
-let db = { users: [], entries: [], results: {}, lockOv: {} };
+let db = { users: [], entries: [], results: {}, lockOv: {}, closed: {}, limits: {}, nlims: {}, nlclosed: {}, nlsh: {}, presence: {} };
 let unsubs = [], ruleWarned = false, refreshTimer = null, lastRateTarget = "";
 function fsCol(n) { return FB.collection(FB.fs, n); }
 function fsDoc(n, id) { return FB.doc(FB.fs, n, id); }
@@ -1315,8 +1365,22 @@ function startListeners(isRetry) {
         const r = {}; snap.docs.forEach(d => { const x = d.data(); r[x.date + "|" + x.shift] = x; }); db.results = r; scheduleRefresh();
     }, lerr("results")));
     unsubs.push(FB.onSnapshot(FB.query(fsCol("locks"), FB.where("date", ">=", t)), snap => {
-        const r = {}; snap.docs.forEach(d => { const x = d.data(); r[x.date + "|" + x.shift] = x.state; }); db.lockOv = r; scheduleRefresh();
+        const r = {}, cl = {}, nl = {}, ncl = {}, nsh = {}; let lim = {};
+        snap.docs.forEach(d => { const x = d.data();
+            if (x.kind === "numclosed") cl[loadKey(x.date, x.shift, x.box, x.number)] = { auto: !!x.auto };      // v100: closed numbers live in the existing "locks" collection
+            else if (x.kind === "numlimits") lim = x;
+            else if (x.kind === "numlimit") { nl[x.type + "_" + x.number] = x.lim || 0; nsh[x.type + "_" + x.number] = Array.isArray(x.sh) ? x.sh : []; if (x.closed) ncl[x.type + "_" + x.number] = true; }
+            else r[x.date + "|" + x.shift] = x.state; });
+        db.lockOv = r; db.closed = cl; db.limits = lim; db.nlims = nl; db.nlclosed = ncl; db.nlsh = nsh; scheduleRefresh();
     }, lerr("locks")));
+    // v104: who is online. Main Admin reads everybody, a Main Sub Admin only his own team (chain contains his name)
+    if (roleK === "main" || roleK === "mainsub") {
+        const pq = roleK === "main" ? fsCol("presence") : FB.query(fsCol("presence"), FB.where("chain", "array-contains", currentUser));
+        unsubs.push(FB.onSnapshot(pq, snap => {
+            const r = {}; snap.docs.forEach(d => { const x = d.data(); r[x.user] = x.seen && x.seen.toMillis ? x.seen.toMillis() : nowMs(); });
+            db.presence = r; if (curPanel === "panelActivity" || curPanel === "panelDash") scheduleRefresh();
+        }, e => { console.error(e); }));
+    }
     // payments received from Main Sub Admins: Main Admin only
     if (roleK === "main") unsubs.push(FB.onSnapshot(fsCol("ledger"), snap => {
         const r = {}; snap.docs.forEach(d => { r[d.id] = d.data(); });
@@ -1325,6 +1389,62 @@ function startListeners(isRetry) {
         if (ks.length) { ks.forEach(k => { if (!r[k]) { r[k] = loc[k]; FB.setDoc(fsDoc("ledger", k), loc[k]).catch(console.error); } }); try { localStorage.removeItem(LOCAL_LEDGER); } catch (e) {} }
         db.ledger = r; db.ledgerErr = false; scheduleRefresh();
     }, e => { console.error(e); db.ledger = localLedgerLoad(); db.ledgerErr = true; scheduleRefresh(); }));
+}
+// ---------- v100: NUMBER LIMIT (auto close) ----------
+// No new Firebase rule needed: closed numbers and the limits are small records in the existing "locks" collection (the Main Admin writes them, everybody reads them).
+// The Main Admin's app counts every user's entries and closes a number when it reaches the limit (works while the Main Admin's app is open).
+function loadKey(date, shift, box, number) { return date + "_" + shift + "_" + box + "_" + number; }
+function typeOfBox(box) { return box === "Box" ? "Box" : box === "Straight" ? "3D" : box.length === 2 ? "2D" : "1D"; }
+// v102: a special limit typed for ONE number (all shifts, all days) wins over the type's limit. 0 there = no limit for that number.
+// v103: ON / OFF can be set for ALL shifts together or for ONE shift (limits.on = all shifts, limits.son = { shift: true/false } overrides)
+function limOnFor(shift) {
+    const l = db.limits || {};
+    if (shift && l.son && Object.prototype.hasOwnProperty.call(l.son, shift)) return !!l.son[shift];
+    return !!l.on;
+}
+function limOn() { return SHIFTS.some(sh => limOnFor(sh.code)); }      // is the limit ON in at least one shift
+// a special number can belong to one shift or to all shifts
+function spApplies(k, shift) {
+    if (!Object.prototype.hasOwnProperty.call(db.nlims || {}, k)) return false;
+    const sh = (db.nlsh || {})[k];
+    return !sh || !sh.length || sh.indexOf(shift) >= 0;
+}
+function loadLimitFor(type, number, shift) {
+    if (!limOnFor(shift)) return 0;               // the switch of this shift is OFF: nothing is limited
+    const k = type + "_" + number, nl = db.nlims || {};
+    if (spApplies(k, shift)) return nl[k] > 0 ? nl[k] : 0;
+    return loadLimitOf(type, shift);
+}
+function loadLimitOf(type, shift) {
+    if (!limOnFor(shift)) return 0;
+    const l = db.limits || {}, v = type === "1D" ? l.l1 : type === "2D" ? l.l2 : type === "3D" ? l.l3 : l.lb;
+    if (v > 0) return v;
+    return l.la > 0 ? l.la : 0;                   // "ALL": one limit for every type that has none of its own
+}
+function spClosed(type, number, shift) { const k = type + "_" + number; return limOnFor(shift) && !!(db.nlclosed || {})[k] && spApplies(k, shift); }
+// 0 = this number is closed, Infinity = open
+function loadRoom(date, shift, type, box, number, extra) { return (db.closed[loadKey(date, shift, box, number)] || spClosed(type, number, shift)) ? 0 : Infinity; }
+function bumpLoad() {}
+function computeLoads() {
+    const t = todayKey(), r = {};
+    db.entries.forEach(e => { if (e.date < t) return; const k = loadKey(e.date, e.shift, e.box, e.number); if (!r[k]) r[k] = { date: e.date, shift: e.shift, box: e.box, num: e.number, cnt: 0 }; r[k].cnt += e.count; });
+    return r;
+}
+let autoBusy = {};
+function autoCloseNumbers() {
+    if (roleK !== "main" || !window.FB) return;
+    const loads = computeLoads();
+    Object.keys(loads).forEach(k => {
+        const x = loads[k], lim = loadLimitFor(typeOfBox(x.box), x.num, x.shift), cl = db.closed[k];
+        if (lim && x.cnt >= lim && !cl && !autoBusy[k]) {
+            autoBusy[k] = 1;
+            FB.setDoc(fsDoc("locks", "nc_" + k), { kind: "numclosed", auto: true, date: x.date, shift: x.shift, box: x.box, number: x.num }).catch(e => { console.error(e); setTimeout(() => { delete autoBusy[k]; }, 30000); });
+        } else if (cl && cl.auto && (!lim || x.cnt < lim) && !autoBusy["o" + k]) {
+            autoBusy["o" + k] = 1;
+            FB.deleteDoc(fsDoc("locks", "nc_" + k)).then(() => { delete autoBusy[k]; delete autoBusy["o" + k]; }).catch(e => { console.error(e); setTimeout(() => { delete autoBusy["o" + k]; }, 30000); });
+        }
+    });
+    Object.keys(db.closed).forEach(k => { if (db.closed[k].auto && !loads[k] && !autoBusy["o" + k]) { autoBusy["o" + k] = 1; FB.deleteDoc(fsDoc("locks", "nc_" + k)).then(() => { delete autoBusy[k]; delete autoBusy["o" + k]; }).catch(() => { delete autoBusy["o" + k]; }); } });
 }
 function deleteMany(ids) {
     for (let i = 0; i < ids.length; i += 400) {
@@ -1526,6 +1646,7 @@ function enterApp(user, role) {
     normalizeSel();
     renderDateChips();
     startListeners();
+    startPresence();
     $("displayUser").innerText = roleK === "main" ? currentUser.toUpperCase() + " (" + role + ")" : currentUser.toUpperCase();
     $("loginScreen").style.display = "none";
     $("entryInputBlock").style.display = roleK === "main" ? "none" : "block";
@@ -1555,7 +1676,32 @@ function enterApp(user, role) {
     curPanel = "";
     navigateTo(homePanel(), null, true);
 }
+// ---------- v104: ONLINE heartbeat ----------
+// While the app is open and visible, every 3 minutes the user writes "I am here" (one small record, id = username). Online = seen in the last 5 minutes.
+let presTimer = null;
+const PRES_EVERY = 3 * 60000, PRES_ONLINE = 5 * 60000;
+function presenceBeat() {
+    try {
+        if (!currentUser || roleK === "main" || !window.FB || !AU.auth.currentUser || document.hidden) return;
+        const meRec = db.users.find(x => x.username === currentUser);
+        if (!meRec) return;
+        const chain = Array.isArray(meRec.chain) && meRec.chain.length ? meRec.chain : computeChain(currentUser);
+        FB.setDoc(fsDoc("presence", currentUser), { user: currentUser, uid: AU.auth.currentUser.uid, chain: chain, seen: FB.serverTimestamp() }).catch(e => console.error(e));
+    } catch (e) { console.error(e); }
+}
+function startPresence() {
+    stopPresence();
+    if (roleK === "main") return;
+    setTimeout(presenceBeat, 2500);
+    presTimer = setInterval(presenceBeat, PRES_EVERY);
+}
+function stopPresence(removeMine) {
+    if (presTimer) { clearInterval(presTimer); presTimer = null; }
+    if (removeMine && currentUser && roleK !== "main" && window.FB) { try { FB.deleteDoc(fsDoc("presence", currentUser)).catch(() => {}); } catch (e) {} }
+}
+document.addEventListener("visibilitychange", function () { if (!document.hidden && currentUser && roleK !== "main") presenceBeat(); });
 function logout() {
+    try { stopPresence(true); } catch (e) {}
     try { stopVoice(); } catch (e) {}
     try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
     try { AU.signOut(AU.auth); } catch (e) {}
@@ -1893,8 +2039,17 @@ function addToPending() {
     const r = readBoxes();
     if (r.err) { alert(r.err); return; }
     if (!r.rows.length) { alert("Please enter a number."); return; }
-    const stamp = Date.now();
-    r.rows.forEach((x, i) => pending.push({ pid: "p" + stamp + "_" + i + "_" + Math.random().toString(36).slice(2, 6), shift: shift, type: x.f.type, box: x.f.label, number: x.num, count: x.c, ts: stamp + i }));
+    const stamp = Date.now(), tgd = entryTarget(shift).date, extra = {}, msgs = [], adds = [];
+    pending.forEach(q => { if (q.shift === shift) { const k = loadKey(tgd, q.shift, q.box, q.number); extra[k] = (extra[k] || 0) + q.count; } });
+    r.rows.forEach(x => {
+        const k = loadKey(tgd, shift, x.f.label, x.num), room = loadRoom(tgd, shift, x.f.type, x.f.label, x.num, extra[k] || 0);
+        if (room <= 0) { msgs.push(x.f.label + " " + x.num + " : FULL (closed)"); return; }
+        let c = x.c; if (c > room) { msgs.push(x.f.label + " " + x.num + " : only " + room + " left, count set to " + room); c = room; }
+        extra[k] = (extra[k] || 0) + c; adds.push({ x: x, c: c });
+    });
+    if (msgs.length) alert("Number limit:\n" + msgs.join("\n"));
+    if (!adds.length) return;
+    adds.forEach((a, i) => pending.push({ pid: "p" + stamp + "_" + i + "_" + Math.random().toString(36).slice(2, 6), shift: shift, type: a.x.f.type, box: a.x.f.label, number: a.x.num, count: a.c, ts: stamp + i }));
     savePending();
     switchTab(currentTab);          // boxes become empty, ready for the next number
     renderPending();
@@ -2525,7 +2680,7 @@ function renderPending() {
     }).join("");
 }
 // Save Entry: everything in the Pending List is saved at once and goes to the Entry List
-const SAVE_CHUNK = 2;
+const SAVE_CHUNK = 1;   // v101: one entry + its counter per request
 let saving = false; let saveFailN = 0, saveFailDenied = false, saveFailTimer = null; let saveFailList = [];
 // The server refused (shift locked by the server clock, or no connection rights): the entries go back to the Pending List.
 function saveFailed(part, err) {
@@ -2559,18 +2714,22 @@ function saveEntry() {
     const meRec = db.users.find(x => x.username === currentUser);
     if (!meRec) { alert("The user list is not loaded yet. Wait a moment and tap Save Entry again."); return; }
     const myChain = Array.isArray(meRec.chain) && meRec.chain.length ? meRec.chain : computeChain(currentUser);
-    const stamp = Date.now(), targets = {}, writes = [], savedPids = new Set(), lockedShifts = [];   // writes: { e: entry, p: pending item }
+    const stamp = Date.now(), targets = {}, writes = [], savedPids = new Set(), lockedShifts = [], fullItems = [], cutItems = [], addedLoad = {};   // writes: { e: entry, p: pending item }
     let k = 0, lastDate = null;
     pending.forEach(p => {
         if (!targets[p.shift]) targets[p.shift] = entryTarget(p.shift);
         const tg = targets[p.shift];
         if (tg.locked) { if (!lockedShifts.includes(p.shift)) lockedShifts.push(p.shift); return; }
-        const fin = calc(p.type, p.count, currentUser);
+        const lk = loadKey(tg.date, p.shift, p.box, p.number), room = loadRoom(tg.date, p.shift, p.type, p.box, p.number, addedLoad[lk] || 0);
+        if (room <= 0) { fullItems.push(p.box + " " + p.number); return; }
+        let cnt = p.count; if (cnt > room) { cutItems.push(p.box + " " + p.number + " (" + p.count + " -> " + room + ")"); cnt = room; }
+        addedLoad[lk] = (addedLoad[lk] || 0) + cnt;
+        const fin = calc(p.type, cnt, currentUser);
         writes.push({ p: p, e: { id: "e" + p.pid, user: currentUser, date: tg.date, shift: p.shift, type: p.type, box: p.box,
-            number: p.number, count: p.count, total: fin.total, comm: fin.comm, net: fin.net, ts: p.ts || (stamp + k), uid: AU.auth.currentUser.uid, chain: myChain } });
+            number: p.number, count: cnt, total: fin.total, comm: fin.comm, net: fin.net, ts: p.ts || (stamp + k), uid: AU.auth.currentUser.uid, chain: myChain } });
         savedPids.add(p.pid); lastDate = tg.date; k++;
     });
-    if (!writes.length) { alert("Shift is locked. It opens again after the result is published. Your list is kept."); return; }
+    if (!writes.length) { alert(fullItems.length ? "These numbers are FULL (closed), nothing was saved:\n" + fullItems.slice(0, 12).join(", ") + "\nDelete them from the list with X." : "Shift is locked. It opens again after the result is published. Your list is kept."); return; }
     // The server (Firestore rules) re-checks the shift lock with ITS OWN clock and stamps the real save time (st).
     // Small batches: each entry makes the rules read the lock / result documents (Firestore limits these reads per batch).
     // v18: entries are sent ONE BY ONE. An entry leaves the Pending List and enters the Entry List ONLY after the server confirms it.
@@ -2585,15 +2744,34 @@ function saveEntry() {
         lastSaved = [];
         const saveOne = async w => {
             let ok = false, lastErr = null;
-            for (let a = 0; a < 3 && !ok; a++) {
+            for (let a = 0; a < 4 && !ok; a++) {
                 try {
-                    await withTimeout(FB.setDoc(fsDoc("entries", w.e.id), Object.assign({}, w.e, { st: FB.serverTimestamp() })), 20000);
+                    // v101: the entry and its number counter ("loads") travel in ONE batch; the server rules check the Number Limit with that counter
+                    const e = w.e, bt = FB.writeBatch(FB.fs);
+                    bt.set(fsDoc("entries", e.id), Object.assign({}, e, { st: FB.serverTimestamp() }));
+                    bt.set(fsDoc("loads", loadKey(e.date, e.shift, e.box, e.number)), { date: e.date, shift: e.shift, box: e.box, number: e.number, cnt: FB.increment(e.count), last: e.id }, { merge: true });
+                    await withTimeout(bt.commit(), 20000);
                     ok = true;
                 } catch (err) {
                     lastErr = err;
                     if (err && err.code === "permission-denied") {
-                        // refused: either the shift is locked, or this entry is already on the server from an earlier try (the reply was lost)
-                        try { const sn = await withTimeout(FB.getDoc(fsDoc("entries", w.e.id)), 8000); if (sn.exists() && !sn.metadata.fromCache) ok = true; } catch (e2) {}
+                        // refused: shift locked, number limit reached, or this entry is already on the server from an earlier try (the reply was lost)
+                        try { const sn = await withTimeout(FB.getDoc(fsDoc("entries", w.e.id)), 8000); if (sn.exists() && !sn.metadata.fromCache) { ok = true; break; } } catch (e2) {}
+                        if (spClosed(w.e.type, w.e.number, w.e.shift)) { lastErr = { code: "number-closed" }; break; }
+                        try {
+                            const lim = loadLimitFor(w.e.type, w.e.number, w.e.shift);
+                            if (lim) {
+                                const cs = await withTimeout(FB.getDoc(fsDoc("loads", loadKey(w.e.date, w.e.shift, w.e.box, w.e.number))), 8000);
+                                const room = lim - (cs.exists() ? (cs.data().cnt || 0) : 0);
+                                if (room <= 0) { lastErr = { code: "number-full" }; break; }
+                                if (room < w.e.count) {
+                                    cutItems.push(w.e.box + " " + w.e.number + " (" + w.e.count + " -> " + room + ")");
+                                    const f2 = calc(w.e.type, room, currentUser);
+                                    w.e = Object.assign({}, w.e, { count: room, total: f2.total, comm: f2.comm, net: f2.net });
+                                    continue;
+                                }
+                            }
+                        } catch (e3) {}
                         break;
                     }
                     // timeout / connection problem: ask the server whether the entry arrived (only a real server answer counts)
@@ -2602,7 +2780,7 @@ function saveEntry() {
                 }
             }
             if (ok) {
-                okN++;
+                okN++; bumpLoad(w.e, w.e.count);
                 if (!db.entries.some(x => x.id === w.e.id)) db.entries.push(w.e);
                 pending = pending.filter(p => p.pid !== w.p.pid);
                 lastSaved.push(w.e.id);
@@ -2621,7 +2799,7 @@ function saveEntry() {
                     g.forEach(w => b.set(fsDoc("entries", w.e.id), Object.assign({}, w.e, { st: FB.serverTimestamp() })));
                     await withTimeout(b.commit(), 20000);
                     g.forEach(w => {
-                        okN++;
+                        okN++; bumpLoad(w.e, w.e.count);
                         if (!db.entries.some(x => x.id === w.e.id)) db.entries.push(w.e);
                         pending = pending.filter(p => p.pid !== w.p.pid);
                         lastSaved.push(w.e.id);
@@ -2650,6 +2828,8 @@ function saveEntry() {
         let msg = "";
         if (bad.length) msg += bad.length + " entries were NOT saved (the server refused them). They are still in the Pending List:\n" + bad.slice(0, 8).join("\n") + "\n\n";
         if (lockedShifts.length) msg += "Still in the list (shift locked): " + lockedShifts.map(c => shiftObj(c).label).join(", ") + ".\n";
+        if (fullItems.length) msg += "FULL (closed), NOT saved, still in the list - delete with X: " + fullItems.slice(0, 12).join(", ") + ".\n";
+        if (cutItems.length) msg += "Count reduced to what was left: " + cutItems.slice(0, 12).join(", ") + ".\n";
         if (msg) alert((okN ? okN + " entries saved.\n\n" : "") + msg); else toast(okN + " entries saved. See Entry List.");
         const first = $("in_" + TABS[currentTab].fields[0].id);
         if (first && !first.disabled) first.focus();
@@ -2692,10 +2872,20 @@ function deleteEntry(id) {
     if (!c.show) { alert("You cannot delete this entry."); return; }
     if (!c.enabled) { alert("Locked. Entries cannot be deleted after the shift time."); return; }
     if (!confirm("Delete this entry?")) return;
+    bumpLoad(e, -e.count);
     db.entries = db.entries.filter(x => x.id !== id);
     lastSaved = lastSaved.filter(x => x !== id);
-    deleteMany([id]);
+    deleteEntryServer(e);
     refreshAll();
+}
+// v101: delete the entry and take its count off the number counter in one batch (if that is refused, the plain delete is used)
+function deleteEntryServer(e) {
+    try {
+        const bt = FB.writeBatch(FB.fs);
+        bt.delete(fsDoc("entries", e.id));
+        bt.set(fsDoc("loads", loadKey(e.date, e.shift, e.box, e.number)), { cnt: FB.increment(-e.count), last: e.id }, { merge: true });
+        bt.commit().catch(() => deleteMany([e.id]));
+    } catch (x) { deleteMany([e.id]); }
 }
 // Main Admin only: delete every entry shown in the Entry List (selected date, shift and user). Needs typing DELETE.
 function adminDelEntries() {
@@ -2927,6 +3117,7 @@ function refreshAll() {
     renderPreview();
     updateLockLabels();
     if (curPanel === "panelAdmin") renderAdmin();
+    autoCloseNumbers();
 }
 function renderPreview() {
     const rows = lastSaved.map(id => db.entries.find(e => e.id === id)).filter(Boolean);
@@ -2967,8 +3158,11 @@ function renderWinners() {
     $("winBanner").innerHTML = bannerHTML(selDate, shift);
     $("winBanner").className = "shift-banner" + (shift !== "ALL" ? " sb-" + shift : "");
     div.className = "entry-list" + (shift !== "ALL" ? " shc-" + shift : "");
-    const set = (w, c, t) => div.insertAdjacentHTML("beforeend",
-        `<div class="summary-box win-end"><div class="summary-row"><span>${shift === "ALL" ? "ALL SHIFTS WINNINGS" : "TOTAL WINNINGS"}:</span> <span>${fmt(w)}</span></div>` +
+    const set = (w, c, t) => div.insertAdjacentHTML("beforeend", shift === "ALL" ?
+        `<div class="summary-box win-end allgold"><div class="summary-row"><span>ALL SHIFTS WINNINGS:</span> <span>${fmt(w)}</span></div>` +
+        `<div class="summary-row"><span>ALL SHIFTS COMMISSION:</span> <span>${fmt(c)}</span></div>` +
+        `<div class="summary-row ag-total"><span>ALL SHIFTS TOTAL:</span> <span>${fmt(t)}</span></div></div>` :
+        `<div class="summary-box win-end"><div class="summary-row"><span>TOTAL WINNINGS:</span> <span>${fmt(w)}</span></div>` +
         `<div class="summary-row"><span>WINNING COMMISSION:</span> <span>${fmt(c)}</span></div>` +
         `<div class="summary-row" style="border-top:2px solid rgba(255,255,255,.6); margin-top:4px; padding-top:4px; font-size:17px;"><span>TOTAL (WIN + COMM):</span> <span>${fmt(t)}</span></div></div>`);
     if (shift === "ALL") {
@@ -3276,10 +3470,13 @@ function activityHTML(users) {
     const rows = users.map(u => {
         let last = 0, cnt = 0;
         db.entries.forEach(e => { if (e.user !== u) return; const m = saveMs(e); if (m >= dayStart) cnt++; if (m > last) last = m; });
-        return { u: u, last: last >= dayStart ? last : 0, cnt: cnt };
-    }).sort((a, b) => (b.last - a.last) || (a.u < b.u ? -1 : 1));
+        const ps = (db.presence || {})[u] || 0;
+        return { u: u, last: last >= dayStart ? last : 0, cnt: cnt, ps: ps, on: ps > 0 && now - ps <= PRES_ONLINE };
+    }).sort((a, b) => (b.on - a.on) || (b.last - a.last) || (a.u < b.u ? -1 : 1));
     if (!rows.length) return '<div class="empty-note">No users.</div>';
-    return rows.map(r => {
+    const nOn = rows.filter(r => r.on).length;
+    const head = `<div class="onl-head">🟢 Online now: <b>${nOn}</b> of ${rows.length}</div>`;
+    return head + rows.map(r => {
         let cls = "a-n", dot = "⚪", t = "No entry today", sub = "";
         if (r.last) {
             const mins = Math.max(0, Math.floor((now - r.last) / 60000));
@@ -3289,7 +3486,9 @@ function activityHTML(users) {
             t = h + ":" + pad(d.getUTCMinutes()) + " " + ap;
             sub = (mins < 1 ? "just now" : mins < 60 ? mins + " min ago" : Math.floor(mins / 60) + " h " + (mins % 60) + " min ago") + " · " + r.cnt + " entries today";
         }
-        return `<div class="act-row ${cls}"><span class="an">${dot} ${esc(r.u.toUpperCase())}${roleTag(r.u)}</span><span class="at">${esc(t)}<small>${esc(sub)}</small></span></div>`;
+        if (r.on) sub += (sub ? " · " : "") + "🟢 online";
+        else if (r.ps) { const pm = Math.max(0, Math.floor((now - r.ps) / 60000)); sub += (sub ? " · " : "") + "app seen " + (pm < 60 ? pm + " min ago" : Math.floor(pm / 60) + " h ago"); }
+        return `<div class="act-row ${cls}"><span class="an">${r.on ? "🟢" : dot} ${esc(r.u.toUpperCase())}${roleTag(r.u)}</span><span class="at">${esc(t)}<small>${esc(sub)}</small></span></div>`;
     }).join("");
 }
 function renderActivity() {
@@ -3639,7 +3838,7 @@ async function runSearch() {
             }
             out += `</div>`;
         });
-        if (shifts.length > 1) out += `<div class="summary-box" style="background:#00e676; color:#000; border-radius:6px; margin-top:10px;"><div class="summary-row"><span>ALL SHIFTS WINNINGS:</span><span>${fmt(tw)}</span></div><div class="summary-row"><span>ALL SHIFTS COMMISSION:</span><span>${fmt(tc)}</span></div><div class="summary-row" style="border-top:2px solid #000; margin-top:3px; padding-top:3px;"><span>ALL SHIFTS TOTAL:</span><span>${fmt(tw + tc)}</span></div></div>`;
+        if (shifts.length > 1) out += `<div class="summary-box allgold" style="margin-top:10px;"><div class="summary-row"><span>ALL SHIFTS WINNINGS:</span><span>${fmt(tw)}</span></div><div class="summary-row"><span>ALL SHIFTS COMMISSION:</span><span>${fmt(tc)}</span></div><div class="summary-row ag-total"><span>ALL SHIFTS TOTAL:</span><span>${fmt(tw + tc)}</span></div></div>`;
     }
     $("searchResults").innerHTML = out;
 }
@@ -3650,7 +3849,140 @@ function fillSelect(el, items, keep) {
     el.innerHTML = items.map(i => `<option value="${esc(i.v)}">${esc(i.t)}</option>`).join("");
     if (prev && items.some(i => i.v === prev)) el.value = prev;
 }
+// ---------- v100: number limit admin ----------
+function renderLimits() {
+    const isMain = roleK === "main";
+    $("limitSection").style.display = isMain ? "block" : "none";
+    if (!isMain) return;
+    const l = db.limits || {};
+    [["limL1", l.l1], ["limL2", l.l2], ["limL3", l.l3], ["limLB", l.lb], ["limLA", l.la]].forEach(a => {
+        const el = $(a[0]); if (el && el !== document.activeElement && el.dataset.dirty !== "1") el.value = a[1] > 0 ? a[1] : 0;
+    });
+    // shift selects (filled once)
+    const shOpts = '<option value="ALL">All shifts</option>' + SHIFTS.map(x => `<option value="${x.code}">${esc(x.label)}</option>`).join("");
+    if (!$("nlShift").options.length) $("nlShift").innerHTML = shOpts;
+    if (!$("loadShift").options.length) $("loadShift").innerHTML = shOpts;
+    const btnS = "width:auto;margin:0;padding:8px 12px;font-size:14px;";
+    const anyOn = limOn(), allOn = SHIFTS.every(x => limOnFor(x.code));
+    $("limShiftBox").innerHTML =
+        `<div style="padding:10px;border-radius:8px;text-align:center;font-weight:900;font-size:15px;color:#fff;background:${allOn ? "#1b5e20" : anyOn ? "#e65100" : "#7f1d1d"};">${allOn ? "🟢 LIMIT IS ON (all shifts)" : anyOn ? "🟠 LIMIT IS ON IN SOME SHIFTS" : "🔴 LIMIT IS OFF (nothing is limited)"}</div>` +
+        `<div style="display:flex;gap:8px;margin:8px 0;"><button class="admin-btn" style="margin:0;background:#2e7d32;" onclick="setLimitState('ALL', true)">🟢 ON · all shifts</button><button class="admin-btn" style="margin:0;background:#b71c1c;" onclick="setLimitState('ALL', false)">🔴 OFF · all shifts</button></div>` +
+        SHIFTS.map(x => { const o = limOnFor(x.code); return `<div class="ld-row"><span>${esc(x.label)}<small>${o ? "🟢 ON" : "🔴 OFF"}</small></span><button class="admin-btn" style="${btnS}background:${o ? "#b71c1c" : "#2e7d32"};" onclick="setLimitState('${x.code}', ${!o})">${o ? "Turn OFF" : "Turn ON"}</button></div>`; }).join("");
+    const nlk = Object.keys(db.nlims || {}).sort();
+    const shName = k => { const sh = (db.nlsh || {})[k]; return sh && sh.length ? sh.map(c => (shiftObj(c) || { label: c }).label).join(", ") : "All shifts"; };
+    $("nlList").innerHTML = nlk.length ? nlk.map(k => { const v = db.nlims[k]; return `<div class="ld-row"><span>${esc(k.replace("_", " "))}<small>${esc(shName(k))} · ${(db.nlclosed || {})[k] ? "🔒 CLOSED" : v > 0 ? "limit " + v : "no limit"}</small></span><button class="admin-btn" style="width:auto;margin:0;padding:6px 10px;font-size:13px;background:#b71c1c;" onclick="delNumLimit('${esc(k)}')">Remove</button></div>`; }).join("") : '<div class="empty-note">No special numbers.</div>';
+    const loads = computeLoads();
+    Object.keys(db.closed).forEach(k => { if (!loads[k]) { const m = k.split("_"); loads[k] = { date: m[0], shift: m[1], box: m[2], num: m.slice(3).join("_"), cnt: 0 }; } });
+    const rows = Object.keys(loads).map(k => Object.assign({ k: k, lim: loadLimitFor(typeOfBox(loads[k].box), loads[k].num, loads[k].shift), closed: !!db.closed[k] }, loads[k])).filter(x => $("loadShift").value === "ALL" || x.shift === $("loadShift").value).sort((a, b) => (b.closed - a.closed) || (b.cnt - a.cnt)).slice(0, 60);
+    $("loadList").innerHTML = rows.length ? rows.map(x => {
+        const near = x.lim && !x.closed && x.cnt >= x.lim * 0.8;
+        return `<div class="ld-row${x.closed ? " ld-full" : near ? " ld-near" : ""}"><span>${esc(x.box)} ${esc(x.num)}<small>${esc(shiftObj(x.shift).label)} · ${esc(showDate(x.date).slice(0, 5))}${x.closed ? " · 🔒 CLOSED" : ""}</small></span><span style="display:flex;align-items:center;gap:10px;"><b>${x.cnt}${x.lim ? " / " + x.lim : ""}</b><button class="admin-btn" style="width:auto;margin:0;padding:6px 10px;font-size:13px;background:${x.closed ? "#2e7d32" : "#b71c1c"};" onclick="toggleNumClosed('${esc(x.k)}')">${x.closed ? "Open" : "Close"}</button></span></div>`;
+    }).join("") : '<div class="empty-note">No entries yet.</div>';
+}
+function toggleNumClosed(k) {
+    if (roleK !== "main") return;
+    const m = k.split("_"), box = m[2], num = m.slice(3).join("_"), isC = !!db.closed[k];
+    const act = isC ? FB.deleteDoc(fsDoc("locks", "nc_" + k)) : FB.setDoc(fsDoc("locks", "nc_" + k), { kind: "numclosed", auto: false, date: m[0], shift: m[1], box: box, number: num });
+    act.then(() => { toast(box + " " + num + (isC ? " opened" : " closed")); audit(isC ? "Number opened" : "Number closed", box + " " + num + " · " + shiftObj(m[1]).label); }).catch(e => { console.error(e); alert("Could not change it (" + (e && e.code ? e.code : e) + ")."); });
+}
+// v101: number counters. Every saved entry adds its count to the counter of its number (collection "loads"); the server rules use it for the Number Limit.
+async function rebuildLoads() {
+    const t = todayKey(), want = {};
+    db.entries.forEach(e => {
+        if (e.date < t) return;
+        const k = loadKey(e.date, e.shift, e.box, e.number);
+        if (!want[k]) want[k] = { date: e.date, shift: e.shift, box: e.box, number: e.number, cnt: 0 };
+        want[k].cnt += e.count;
+    });
+    const sn = await FB.getDocs(FB.query(fsCol("loads"), FB.where("date", ">=", t)));
+    sn.docs.forEach(d => { if (!want[d.id]) { const x = d.data(); want[d.id] = { date: x.date, shift: x.shift, box: x.box, number: x.number, cnt: 0 }; } });
+    const ks = Object.keys(want);
+    for (let i = 0; i < ks.length; i += 400) {
+        const bt = FB.writeBatch(FB.fs);
+        ks.slice(i, i + 400).forEach(k => bt.set(fsDoc("loads", k), Object.assign({ last: "rebuild" }, want[k])));
+        await bt.commit();
+    }
+    return ks.length;
+}
+const NL_DIGITS = { "1D": 1, "2D": 2, "3D": 3, "Box": 3 };
+function saveNumLimitAction(close) {
+    if (roleK !== "main" || busy) return;
+    const type = $("nlType").value, shSel = $("nlShift").value, shArr = shSel === "ALL" ? [] : [shSel], shTxt = shSel === "ALL" ? "EVERY shift" : shiftObj(shSel).label, n = NL_DIGITS[type], vs = $("nlVal").value.trim(), v = (close || vs === "") ? 0 : parseInt(vs, 10);
+    const nums = [];
+    let bad = "";
+    $("nlNum").value.split(/[^0-9]+/).filter(Boolean).forEach(tk => {
+        if (tk.length % n !== 0) { bad = tk; return; }
+        for (let i = 0; i < tk.length; i += n) { const x = tk.slice(i, i + n); if (type === "Box" && x[0] === x[1] && x[1] === x[2]) { bad = x + " (same digit 3 times)"; continue; } if (!nums.includes(x)) nums.push(x); }
+    });
+    if (bad) { alert(type + " needs " + n + "-digit numbers. Wrong: " + bad); return; }
+    if (!nums.length) { alert("Type at least one number."); return; }
+    if (isNaN(v) || v < 0) { alert("Type the limit as a plain number."); return; }
+    if (close && !confirm("Close " + nums.length + " number(s) of " + type + " in " + shTxt + " (every day)?\n\n" + nums.slice(0, 20).join(", "))) return;
+    busy = true;
+    (async () => {
+        try {
+            for (let i = 0; i < nums.length; i += 400) {
+                const bt = FB.writeBatch(FB.fs);
+                nums.slice(i, i + 400).forEach(x => bt.set(fsDoc("locks", "nl_" + type + "_" + x), { kind: "numlimit", date: "9999-12-31", shift: "LIM", type: type, number: x, lim: v, closed: !!close, sh: shArr }));
+                await bt.commit();
+            }
+            db.nlims = db.nlims || {}; db.nlclosed = db.nlclosed || {};
+            db.nlsh = db.nlsh || {};
+            nums.forEach(x => { db.nlims[type + "_" + x] = v; db.nlsh[type + "_" + x] = shArr; if (close) db.nlclosed[type + "_" + x] = true; else delete db.nlclosed[type + "_" + x]; });
+            $("nlNum").value = ""; $("nlVal").value = "";
+            toast(nums.length + " number(s): " + (close ? "closed" : v > 0 ? "limit " + v : "no limit"));
+            audit("Special numbers", type + " [" + shTxt + "] " + nums.slice(0, 30).join(",") + " → " + (close ? "closed" : v > 0 ? v : "no limit"));
+            refreshAll();
+        } catch (e) { console.error(e); alert("Could not save (" + (e && e.code ? e.code : e) + "). Check that the new Firebase rules are published."); }
+        finally { busy = false; }
+    })();
+}
+function delNumLimit(k) {
+    if (roleK !== "main") return;
+    if (!confirm("Remove the special limit of " + k.replace("_", " ") + "? The normal limit applies again.")) return;
+    FB.deleteDoc(fsDoc("locks", "nl_" + k)).then(() => { if (db.nlims) delete db.nlims[k]; toast("Removed"); audit("Special number limit removed", k.replace("_", " ")); refreshAll(); }).catch(e => { console.error(e); alert("Could not remove (" + (e && e.code ? e.code : e) + ")."); });
+}
+async function rebuildLoadsAction() {
+    if (roleK !== "main" || busy) return;
+    if (!confirm("Recount every number (today and later) from the saved entries? Do this when few people are entering.")) return;
+    busy = true;
+    try { const n = await rebuildLoads(); toast("Counted " + n + " numbers."); audit("Number counters rebuilt", n + " numbers"); }
+    catch (e) { console.error(e); alert("Could not recount (" + (e && e.code ? e.code : e) + "). Check that the new Firebase rules are published."); }
+    finally { busy = false; }
+}
+async function writeLimits(mut, msg) {
+    if (roleK !== "main" || busy) return;
+    const g = id => { const v = parseInt($(id).value, 10); return v > 0 ? v : 0; };
+    const cur = db.limits || {};
+    const d = { kind: "numlimits", date: "9999-12-31", shift: "LIM", l1: g("limL1"), l2: g("limL2"), l3: g("limL3"), lb: g("limLB"), la: g("limLA"), on: !!cur.on, son: Object.assign({}, cur.son || {}) };
+    const before = {}; SHIFTS.forEach(x => { before[x.code] = limOnFor(x.code); });
+    if (mut) mut(d);
+    const nowOn = x => (d.son && Object.prototype.hasOwnProperty.call(d.son, x)) ? !!d.son[x] : !!d.on;
+    busy = true;
+    try {
+        // switching ON (any shift): first recount from the real entries, so the server starts from the true numbers
+        if (SHIFTS.some(x => nowOn(x.code) && !before[x.code])) await rebuildLoads();
+        await FB.setDoc(fsDoc("locks", "numlimits"), d);
+        ["limL1", "limL2", "limL3", "limLB", "limLA"].forEach(i => { $(i).dataset.dirty = ""; });
+        db.limits = d; toast(msg || "Limits saved");
+        audit(msg ? "Number limit: " + msg : "Number limit values saved", "1D " + d.l1 + " · 2D " + d.l2 + " · 3D " + d.l3 + " · Box " + d.lb + " · ALL " + d.la + " · ON: " + (SHIFTS.filter(x => nowOn(x.code)).map(x => x.code).join(",") || "none"));
+        refreshAll();
+    } catch (e) { console.error(e); alert("Could not save the limits (" + (e && e.code ? e.code : e) + "). Check that the new Firebase rules are published."); }
+    finally { busy = false; }
+}
+function saveLimitsAction() { writeLimits(null, "Limits saved"); }
+// which = "ALL" or a shift code; want = true (ON) / false (OFF)
+function setLimitState(which, want) {
+    if (roleK !== "main") return;
+    const name = which === "ALL" ? "ALL shifts" : shiftObj(which).label;
+    if (!confirm(want ? "Turn the Number Limit ON for " + name + "?\n\nThe limits typed above, the ALL limit and the special numbers start working at once, for everybody." : "Turn the Number Limit OFF for " + name + "?\n\nNothing will be limited or closed in " + name + " (the numbers and limits stay saved).")) return;
+    writeLimits(d => {
+        if (which === "ALL") { d.on = !!want; d.son = {}; }
+        else d.son[which] = !!want;
+    }, (want ? "ON · " : "OFF · ") + name);
+}
 function renderAdmin() {
+    renderLimits();
     const isMain = roleK === "main";
     $("commSection").style.display = isMain ? "block" : "none";
     $("addUserSection").style.display = isMain ? "block" : "none";
