@@ -612,6 +612,31 @@ body.typing .floating-menu-options { display: none !important; }
 .floating-menu-options button { width: calc(100% - 16px); margin: 3px 8px; min-height: 52px; font-size: 16px; }
 .floating-menu-options button b { font-size: 16px; }
 .floating-menu-options .menu-sep { display: block !important; height: 1px; background: #3a3a4a; margin: 6px 12px; }
+/* v52: slimmer side menu (less width + thinner boxes, so it scrolls less) and livelier button colours */
+.floating-menu-options { width: min(240px, 72vw); padding-bottom: 14px; }
+.floating-menu-options::before { right: min(240px, 72vw); }
+.floating-menu-options .dw-head { padding: 12px 14px 9px; margin-bottom: 5px; font-size: 17px; }
+.floating-menu-options button { width: calc(100% - 14px); margin: 2px 7px; min-height: 41px; padding: 5px 10px; gap: 8px; font-size: 14.5px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.22); }
+.floating-menu-options button i { font-size: 19px; }
+.floating-menu-options button b { font-size: 14.5px; font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+.floating-menu-options .menu-sep { margin: 4px 12px; }
+.floating-menu-options .m1 { background: linear-gradient(90deg, #0d47a1, #2196f3); }
+.floating-menu-options .m2 { background: linear-gradient(90deg, #1b8a3a, #3ddc74); }
+.floating-menu-options .m3 { background: linear-gradient(90deg, #e65100, #ffb300); }
+.floating-menu-options .m4 { background: linear-gradient(90deg, #7b1fa2, #d05ce3); }
+.floating-menu-options .m5 { background: linear-gradient(90deg, #c2185b, #ff5c8d); }
+.floating-menu-options .m6 { background: linear-gradient(90deg, #00838f, #14d3e6); }
+.floating-menu-options .m7 { background: linear-gradient(90deg, #4e9a1a, #8bd630); }
+.floating-menu-options .m8 { background: linear-gradient(90deg, #d84315, #ff7043); }
+.floating-menu-options .m9 { background: linear-gradient(90deg, #4527a0, #7c4dff); }
+.floating-menu-options .m10 { background: linear-gradient(90deg, #00a152, #2ee59d); }
+/* v53: Core Management sections fold open / closed (nothing removed, only hidden until tapped) */
+#panelAdmin .acc-title { cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 0; padding: 9px 4px; border-bottom: none; -webkit-tap-highlight-color: transparent; user-select: none; }
+#panelAdmin .acc-title::after { content: "\25B8"; font-size: 19px; color: #ffd740; opacity: 1; flex: 0 0 auto; }
+#panelAdmin .acc-title.acc-open { margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #333; }
+#panelAdmin .acc-title.acc-open::after { content: "\25BE"; }
+#panelAdmin .acc-title:active { background: rgba(255,255,255,.06); }
+#panelAdmin .admin-row .acc-title .acc-tag { font-size: 11px; opacity: .7; font-weight: 600; }
 /* ===== v51: Entry List first column (box name + time) stands out ===== */
 .etbl td.tp { background: #fff3c4 !important; color: #b71c1c; font-size: 12.5px; font-weight: 900; -webkit-text-stroke: .35px currentColor; border-right: 3px solid #ff6f00; }
 .etbl td.tp .et { font-size: 11px; color: #0d47a1; font-weight: 900; -webkit-text-stroke: .3px currentColor; margin-top: 2px; }
@@ -1004,7 +1029,7 @@ html, body { overscroll-behavior: none; }
     <!-- 7. CORE MANAGEMENT -->
     <div id="panelAdmin" class="screen-panel">
         <div class="admin-row" id="commSection">
-            <div class="admin-section-title">Modify Commission Rates</div>
+            <div class="admin-section-title" style="color:#69f0ae;">Modify Commission Rates</div>
             <label>Select User:</label>
             <select id="rateTarget" class="admin-select" onchange="onRateTargetChange()"></select>
             <label>2D / 3D Commission (%):</label>
@@ -1028,7 +1053,7 @@ html, body { overscroll-behavior: none; }
             <button class="admin-btn" onclick="saveLimitsAction()">💾 Save Limits (keeps ON / OFF as it is)</button>
             <div id="limShiftBox" style="margin-top:10px;"></div>
             <button class="admin-btn" style="background:#6a1b9a;" onclick="rebuildLoadsAction()">🔄 Recount numbers (only if counts look wrong)</button>
-            <div class="admin-section-title" style="margin-top:14px;">⭐ Special numbers (limit / close)</div>
+            <div class="admin-section-title" style="margin-top:14px; color:#ffb74d;">⭐ Special numbers (limit / close)</div>
             <div class="note">Choose the type, type ONE or MANY numbers (separated by space, comma or new line), then either give them their own limit or close them. Choose one shift or all shifts. It works every day and is checked by the Firebase server. A number has ONE special setting; saving it again replaces the old one. Limit empty or 0 = NO limit for these numbers. Remove a number from the list below to go back to the normal limit.</div>
             <label>Type</label>
             <select id="nlType" class="admin-select"><option value="1D">1D (1 digit)</option><option value="2D">2D (2 digits)</option><option value="3D">3D Straight (3 digits)</option><option value="Box">Box (3 digits)</option></select>
@@ -1041,14 +1066,14 @@ html, body { overscroll-behavior: none; }
             <button class="admin-btn" style="background:#ef6c00;" onclick="saveNumLimitAction(false)">⭐ Save limit for these numbers</button>
             <button class="admin-btn" style="background:#b71c1c;" onclick="saveNumLimitAction(true)">🔒 Close these numbers</button>
             <div id="nlList" style="margin-top:8px;"></div>
-            <div class="admin-section-title" style="margin-top:14px;">📊 Number Load (highest first)</div>
+            <div class="admin-section-title" style="margin-top:14px; color:#b2ff59;">📊 Number Load (highest first)</div>
             <select id="loadShift" class="admin-select" onchange="renderLimits()"></select>
             <div id="loadList"></div>
         </div>
 
         <!-- Add New User: Main Admin only -->
         <div class="admin-row" id="addUserSection" style="display:none;">
-            <div class="admin-section-title">Add New User</div>
+            <div class="admin-section-title" style="color:#f48fb1;">Add New User</div>
             <input type="text" id="newUsername" placeholder="Enter Username" class="admin-input">
             <input type="password" id="newPassword" placeholder="Enter Initial Password" class="admin-input">
             <div id="roleWrap">
@@ -1062,17 +1087,17 @@ html, body { overscroll-behavior: none; }
                 <label>Parent Supervisor:</label>
                 <select id="newUserParent" class="admin-select"></select>
             </div>
-            <button class="admin-btn" style="background:#1565c0;" onclick="createUserAction()">Register User</button>
+            <button class="admin-btn" style="background:#00897b;" onclick="createUserAction()">Register User</button>
             <div class="note">Passwords: minimum 6 characters. Sub Admin: can log in with ANY name, only the password is checked (each Sub Admin needs a different password). Main Sub Admin: must use this exact username.</div>
         </div>
         <div class="admin-row" id="teamFixSection" style="display:none;">
-            <div class="admin-section-title">Team Update (one time)</div>
+            <div class="admin-section-title" style="color:#ce93d8;">Team Update (one time)</div>
             <div class="note">Adds the team name list to every user and every old entry, so a Main Sub Admin can read only his own team. Do this once, when the new app is installed. It is safe to tap again.</div>
             <button class="admin-btn" style="background:#2e7d32;" id="teamFixBtn" onclick="teamUpdateAction()">Update Team Data</button>
         </div>
 
         <div class="admin-row">
-            <div class="admin-section-title">Change My Password (Main Admin)</div>
+            <div class="admin-section-title" style="color:#ffab91;">Change My Password (Main Admin)</div>
             <input type="password" id="myOldPwd" placeholder="Current password" class="admin-input" autocomplete="current-password">
             <input type="password" id="myNewPwd" placeholder="New password (min 6 characters)" class="admin-input" autocomplete="new-password">
             <input type="password" id="myNewPwd2" placeholder="Type the new password again" class="admin-input" autocomplete="new-password">
@@ -1081,7 +1106,7 @@ html, body { overscroll-behavior: none; }
         </div>
 
         <div class="admin-row">
-            <div class="admin-section-title">Force Reset Password</div>
+            <div class="admin-section-title" style="color:#80cbc4;">Force Reset Password</div>
             <select id="pwdTargetUser" class="admin-select"></select>
             <input type="password" id="pwdNewValue" placeholder="New Secret Password" class="admin-input">
             <button class="admin-btn" style="background:#c62828;" onclick="resetPasswordAction()">Override Password</button>
@@ -1132,6 +1157,32 @@ html, body { overscroll-behavior: none; }
     <button class="m10" onclick="navigateTo('panelAdmin')" id="adminMenuBtn" style="display:none;">👑 Core Management <span>➔</span></button>
     <button class="m9" id="auditMenuBtn" onclick="navigateTo('panelAudit')" style="display:none;">📜 Audit Log <span>➔</span></button>
 </div>
+
+<script>
+// Core Management: every section title becomes a tap-to-open bar. Only hides / shows; ids, buttons and fields are untouched.
+(function () {
+    function fold(title, takeAll) {
+        if (!title || title.getAttribute("data-acc")) return;
+        title.setAttribute("data-acc", "1");
+        var body = document.createElement("div"); body.className = "acc-body"; body.style.display = "none";
+        var n = title.nextSibling;
+        while (n) {
+            var nx = n.nextSibling;
+            if (!takeAll && n.nodeType === 1 && n.classList.contains("admin-section-title")) break;
+            body.appendChild(n); n = nx;
+        }
+        title.parentNode.insertBefore(body, title.nextSibling);
+        title.classList.add("acc-title"); title.setAttribute("role", "button");
+        title.addEventListener("click", function () { var o = title.classList.toggle("acc-open"); body.style.display = o ? "" : "none"; });
+    }
+    var rows = document.querySelectorAll("#panelAdmin > .admin-row");
+    for (var i = 0; i < rows.length; i++) {
+        var ts = rows[i].querySelectorAll(":scope > .admin-section-title");
+        for (var j = 1; j < ts.length; j++) fold(ts[j], false);   // inner titles (Special numbers, Number Load) first
+        if (ts.length) fold(ts[0], true);                         // then the section's own title takes everything below it
+    }
+})();
+</script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
@@ -1317,7 +1368,8 @@ function passHash(u, p) { return sha256(unescape(encodeURIComponent(u + ":" + p)
 
 // ---------- FIREBASE DATA LAYER ----------
 // Everything below is shared live between all devices through Firestore.
-let db = { users: [], entries: [], results: {}, lockOv: {}, closed: {}, limits: {}, nlims: {}, nlclosed: {}, nlsh: {}, presence: {} };
+function freshDb() { return { users: [], entries: [], results: {}, lockOv: {}, closed: {}, limits: {}, nlims: {}, nlclosed: {}, nlsh: {}, presence: {} }; }
+let db = freshDb();
 let unsubs = [], ruleWarned = false, refreshTimer = null, lastRateTarget = "";
 function fsCol(n) { return FB.collection(FB.fs, n); }
 function fsDoc(n, id) { return FB.doc(FB.fs, n, id); }
@@ -1706,7 +1758,7 @@ function logout() {
     try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
     try { AU.signOut(AU.auth); } catch (e) {}
     stopListeners();
-    db = { users: [], entries: [], results: {}, lockOv: {} };
+    db = freshDb();
     currentUser = ""; currentRole = ""; roleK = "sub"; pending = [];
     $("loginScreen").style.display = "flex";
     document.body.classList.remove("onhome");
