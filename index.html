@@ -844,6 +844,90 @@ html, body { overscroll-behavior: none; }
 .lim-mini .admin-input { text-align: center; font-size: 16px; padding: 5px 2px; }
 .lim-mini .lim-all { grid-column: 1 / -1; }
 .lim-col .ld-row { padding: 6px; font-size: 13px; flex-wrap: wrap; gap: 4px; }
+
+/* ===== v106: menu shows only what the bottom bar does not have; menu is a bottom sheet with a 2-column grid ===== */
+.floating-menu-options .dupe { display: none !important; }
+.floating-menu-options { left: 0; right: 0; top: auto; bottom: 60px; width: auto; max-height: 72vh; padding: 0 0 12px; border: none; border-top: 2px solid #ab47bc; border-radius: 18px 18px 0 0; box-shadow: 0 -8px 30px rgba(0,0,0,.7); transform: translateY(110%); transition: transform .25s ease; overflow-y: auto; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; }
+.floating-menu-options.open { right: 0; transform: translateY(0); }
+.floating-menu-options::before { left: 0; right: 0; top: 0; bottom: 0; }
+.floating-menu-options[style*="block"] { display: grid !important; }
+.floating-menu-options .dw-head { grid-column: 1 / -1; margin: 0 0 2px; padding: 12px 14px 9px; font-size: 16px; border-radius: 18px 18px 0 0; }
+.floating-menu-options button { width: auto; margin: 0; min-height: 78px; padding: 8px 6px; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; border-radius: 14px; }
+.floating-menu-options { padding-left: 10px; padding-right: 10px; }
+.floating-menu-options .dw-head { margin-left: -10px; margin-right: -10px; }
+.floating-menu-options button i { font-size: 28px; }
+.floating-menu-options button b { font-size: 13px; line-height: 1.2; text-align: center; }
+.floating-menu-options .menu-sep { display: none !important; }
+
+/* ===== v107: full-screen menu, Search on the left, everything else on the right ===== */
+.floating-menu-options { position: fixed; top: 0; bottom: 0; left: 0; right: 0; width: auto; max-height: none; display: none; padding: 0 0 24px; border: none; border-radius: 0; box-shadow: none; transform: none; opacity: 0; transition: opacity .2s ease; background: rgba(12,12,32,.97); overflow-y: auto; z-index: 1001; }
+.floating-menu-options.open { opacity: 1; transform: none; }
+.floating-menu-options[style*="block"] { display: block !important; }
+.floating-menu-options::before { display: none; }
+.floating-menu-options .dw-head { display: flex !important; justify-content: space-between; align-items: center; margin: 0 0 10px; padding: 14px 14px; border-radius: 0; font-size: 18px; }
+.floating-menu-options .dw-head .dw-close { width: auto; min-height: 0; margin: 0; padding: 8px 14px; flex-direction: row; background: #c62828; border-radius: 10px; font-size: 14px; font-weight: 900; color: #fff; }
+.mcols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 12px; align-items: start; }
+.mcol { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+.mcol-h { text-align: center; font-size: 15px; font-weight: 900; color: #ffd54f; letter-spacing: 1px; padding: 6px 0 8px; border-bottom: 2px solid #ab47bc; }
+.mcol > button { width: 100%; min-height: 92px; margin: 0; }
+.mcol > button b { font-size: 14px; }
+.floating-menu-options .dupe { display: none !important; }
+
+/* ===== v109: speed dial - pills pop up above the More button (Search left, the rest right) ===== */
+.floating-menu-options { top: 0; left: 0; right: 0; bottom: 60px; width: auto; padding: 0 12px 14px; background: rgba(6,6,22,.72); border: none; border-radius: 0; overflow-y: auto; }
+.floating-menu-options[style*="block"] { display: flex !important; flex-direction: column; justify-content: flex-end; }
+.floating-menu-options .dw-head { display: none !important; }
+.mcols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0; align-items: end; }
+.mcol { align-items: flex-end; justify-content: flex-end; gap: 10px; }
+.mcol-h { align-self: stretch; text-align: right; border-bottom: none; font-size: 12px; color: #ffd54f; padding: 0 6px; opacity: .95; }
+.mcol > button { width: auto; max-width: 100%; min-height: 44px; margin: 0; padding: 7px 14px 7px 12px; flex-direction: row; justify-content: flex-start; gap: 8px; text-align: left; border-radius: 26px; box-shadow: 0 4px 12px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.25); }
+.mcol > button i { font-size: 20px; }
+.mcol > button b { font-size: 13px; text-align: left; line-height: 1.2; }
+@keyframes sdPop { from { opacity: 0; transform: translateY(24px) scale(.6); } to { opacity: 1; transform: none; } }
+.floating-menu-options.open .mcol > button { animation: sdPop .24s ease both; }
+.floating-menu-options.open .mcol > button:nth-last-child(1) { animation-delay: 0s; }
+.floating-menu-options.open .mcol > button:nth-last-child(2) { animation-delay: .04s; }
+.floating-menu-options.open .mcol > button:nth-last-child(3) { animation-delay: .08s; }
+.floating-menu-options.open .mcol > button:nth-last-child(4) { animation-delay: .12s; }
+.floating-menu-options.open .mcol > button:nth-last-child(5) { animation-delay: .16s; }
+.floating-menu-options.open .mcol > button:nth-last-child(6) { animation-delay: .20s; }
+.floating-menu-options.open .mcol > button:nth-last-child(7) { animation-delay: .24s; }
+.floating-menu-options.open .mcol > button:nth-last-child(8) { animation-delay: .28s; }
+.floating-menu-options.open .mcol > button:nth-last-child(9) { animation-delay: .32s; }
+.floating-menu-options.open .mcol > button:nth-last-child(10) { animation-delay: .36s; }
+#bottomNav button.nav-more { position: relative; }
+
+/* ===== v110: press colour, coloured headings, highlighted More button, 2 + 2 + 1 layout for a Sub Admin ===== */
+.mcol > button:active, .msub > button:active { filter: brightness(1.45) saturate(1.3); transform: scale(.94); }
+.mcol:nth-child(1) .mcol-h { color: #4dd0e1; font-size: 14px; }
+.mcol:nth-child(2) .mcol-h { color: #ff80ab; font-size: 14px; }
+body:has(#floatingMenuOptions[style*="block"]) #bottomNav button.nav-more { background: linear-gradient(180deg, #ad1457, #6a1b9a); color: #fff; border-top-color: #ffd54f; }
+.msub { display: none; }
+.floating-menu-options.sub5 .mcols { display: none; }
+.floating-menu-options.sub5 .msub { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; justify-items: end; }
+.msub > button { width: auto; max-width: 100%; min-height: 44px; margin: 0; padding: 7px 14px 7px 12px; flex-direction: row; justify-content: flex-start; gap: 8px; text-align: left; border-radius: 26px; box-shadow: 0 4px 12px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.25); }
+.msub > button i { font-size: 20px; }
+.msub > button b { font-size: 13px; text-align: left; line-height: 1.2; }
+.msub > button:nth-child(5) { grid-column: 1 / -1; justify-self: center; }
+.floating-menu-options.open .msub > button { animation: sdPop .24s ease both; }
+
+/* ===== v111: bigger menu buttons, every button has its own colour (same for everybody) ===== */
+.mcol, .msub { gap: 12px; }
+.msub { gap: 12px; }
+.mcol > button, .msub > button { min-height: 58px; padding: 10px 18px 10px 14px; gap: 10px; border-radius: 30px; box-shadow: 0 5px 14px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.3); }
+.mcol > button i, .msub > button i { font-size: 25px; }
+.mcol > button b, .msub > button b { font-size: 15.5px; line-height: 1.2; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+.mcol-h { font-size: 15px !important; }
+.floating-menu-options button[onclick*="openSearch('entries')"]    { background: linear-gradient(90deg, #0d47a1, #42a5f5) !important; }
+.floating-menu-options button[onclick*="openSearch('winners')"]    { background: linear-gradient(90deg, #1b8a3a, #5fd68a) !important; }
+.floating-menu-options button[onclick*="openSearch('result')"]     { background: linear-gradient(90deg, #e65100, #ffb300) !important; }
+.floating-menu-options button[onclick*="openSearch('settlement')"] { background: linear-gradient(90deg, #6a1b9a, #c15ee0) !important; }
+.floating-menu-options button[onclick*="openSearch('bonus')"]      { background: linear-gradient(90deg, #c2185b, #ff6f9c) !important; }
+.floating-menu-options button[onclick*="panelSettlement"]          { background: linear-gradient(90deg, #00838f, #1fd2e6) !important; }
+.floating-menu-options button[onclick*="panelBonus"]               { background: linear-gradient(90deg, #d84315, #ff8a50) !important; }
+.floating-menu-options button[onclick*="panelActivity"]            { background: linear-gradient(90deg, #4e8f12, #9ad63a) !important; }
+.floating-menu-options button[onclick*="panelAdmin"]               { background: linear-gradient(90deg, #283593, #7c8cff) !important; }
+.floating-menu-options button[onclick*="panelAudit"]               { background: linear-gradient(90deg, #b71c1c, #ff5252) !important; }
 </style>
 </head>
 <body>
@@ -1152,24 +1236,32 @@ html, body { overscroll-behavior: none; }
 <!-- FLOATING MENU -->
 <button class="floating-menu-btn" id="menuBtn" onclick="toggleFloatingMenu()">☰</button>
 <div class="floating-menu-options" id="floatingMenuOptions">
-    <div class="dw-head">☰ Menu<small id="dwUser"></small></div>
-    <button class="m1" id="mDash" onclick="navigateTo('panelDash')" style="display:none;">📊 Dashboard <span>➔</span></button>
-    <button class="m1" id="mHome" onclick="navigateTo('panelEntry')">🏠 Home <span>➔</span></button>
-    <button class="m2" onclick="navigateTo('panelList')">📝 Entry List <span>➔</span></button>
-    <button class="m3" onclick="navigateTo('panelWinners')">🏆 Winners List <span>➔</span></button>
-    <button class="m4" onclick="navigateTo('panelResult')">📊 Prize Board <span>➔</span></button>
-    <button class="m5" onclick="navigateTo('panelSettlement')">💰 Ledger &amp; Settlement <span>➔</span></button>
-    <div class="menu-sep"></div>
-    <button class="m6" onclick="openSearch('entries')">🔍 Search Entry List <span>➔</span></button>
-    <button class="m7" onclick="openSearch('winners')">🔍 Search Winners List <span>➔</span></button>
-    <button class="m8" onclick="openSearch('result')">🔍 Search Result <span>➔</span></button>
-    <button class="m7" id="searchBonusBtn" onclick="openSearch('bonus')" style="display:none;">🔍 Search Team Bonus <span>➔</span></button>
-    <button class="m9" onclick="openSearch('settlement')">🔍 Search Ledger &amp; Settlement <span>➔</span></button>
-    <button class="m6" id="bonusMenuBtn" onclick="navigateTo('panelBonus')" style="display:none;">💎 Team Bonus <span>➔</span></button>
-    <button class="m7" id="activityMenuBtn" onclick="navigateTo('panelActivity')" style="display:none;">👥 Team Activity <span>➔</span></button>
+    <div class="dw-head"><span>☰ Menu<small id="dwUser"></small></span><button type="button" class="dw-close" onclick="toggleFloatingMenu()">✖ Close</button></div>
+    <div class="mcols">
+        <div class="mcol">
+            <div class="mcol-h">🔍 SEARCH</div>
+            <button class="m6" id="msSE" onclick="openSearch('entries')">🔍 Search Entry List</button>
+            <button class="m7" id="msSW" onclick="openSearch('winners')">🔍 Search Winners List</button>
+            <button class="m8" id="msSR" onclick="openSearch('result')">🔍 Search Result</button>
+            <button class="m9" id="msSS" onclick="openSearch('settlement')">🔍 Search Ledger &amp; Settlement</button>
+            <button class="m7" id="searchBonusBtn" onclick="openSearch('bonus')" style="display:none;">🔍 Search Team Bonus</button>
+        </div>
+        <div class="mcol">
+            <div class="mcol-h">☰ MORE</div>
+            <button class="m1" id="mDash" onclick="navigateTo('panelDash')" style="display:none;">📊 Dashboard</button>
+            <button class="m1" id="mHome" onclick="navigateTo('panelEntry')">🏠 Home</button>
+            <button class="m2" onclick="navigateTo('panelList')">📝 Entry List</button>
+            <button class="m3" onclick="navigateTo('panelWinners')">🏆 Winners List</button>
+            <button class="m4" onclick="navigateTo('panelResult')">📊 Prize Board</button>
+            <button class="m5" id="msLS" onclick="navigateTo('panelSettlement')">💰 Ledger &amp; Settlement</button>
+            <button class="m6" id="bonusMenuBtn" onclick="navigateTo('panelBonus')" style="display:none;">💎 Team Bonus</button>
+            <button class="m7" id="activityMenuBtn" onclick="navigateTo('panelActivity')" style="display:none;">👥 Team Activity</button>
+            <button class="m10" onclick="navigateTo('panelAdmin')" id="adminMenuBtn" style="display:none;">👑 Core Management</button>
+            <button class="m9" id="auditMenuBtn" onclick="navigateTo('panelAudit')" style="display:none;">📜 Audit Log</button>
+        </div>
+    </div>
+    <div class="msub" id="msubBox"></div>
     <div class="menu-sep" id="adminMenuSep" style="display:none;"></div>
-    <button class="m10" onclick="navigateTo('panelAdmin')" id="adminMenuBtn" style="display:none;">👑 Core Management <span>➔</span></button>
-    <button class="m9" id="auditMenuBtn" onclick="navigateTo('panelAudit')" style="display:none;">📜 Audit Log <span>➔</span></button>
 </div>
 
 <script>
@@ -1408,7 +1500,19 @@ function scheduleRefresh() {
     if (!currentUser || refreshTimer) return;
     refreshTimer = setTimeout(() => { refreshTimer = null; refreshAll(); }, 40);
 }
-function stopListeners() { unsubs.forEach(u => { try { u(); } catch (e) {} }); unsubs = []; }
+let presUnsub = null;
+function stopPresenceListener() { if (presUnsub) { try { presUnsub(); } catch (e) {} presUnsub = null; } }
+function syncPresenceListener() {
+    const need = !!currentUser && (roleK === "main" || roleK === "mainsub") && (curPanel === "panelActivity" || curPanel === "panelDash");
+    if (!need) { if (presUnsub) { stopPresenceListener(); db.presence = {}; } return; }
+    if (presUnsub || !window.FB) return;
+    const pq = roleK === "main" ? fsCol("presence") : FB.query(fsCol("presence"), FB.where("chain", "array-contains", currentUser));
+    presUnsub = FB.onSnapshot(pq, snap => {
+        const r = {}; snap.docs.forEach(d => { const x = d.data(); r[x.user] = x.seen && x.seen.toMillis ? x.seen.toMillis() : nowMs(); });
+        db.presence = r; if (curPanel === "panelActivity" || curPanel === "panelDash") scheduleRefresh();
+    }, e => { console.error(e); });
+}
+function stopListeners() { stopPresenceListener(); unsubs.forEach(u => { try { u(); } catch (e) {} }); unsubs = []; }
 function startListeners(isRetry) {
     if (!isRetry) listenRetried = false;
     stopListeners();
@@ -1439,14 +1543,8 @@ function startListeners(isRetry) {
             else r[x.date + "|" + x.shift] = x.state; });
         db.lockOv = r; db.closed = cl; db.limits = lim; db.nlims = nl; db.nlclosed = ncl; db.nlsh = nsh; scheduleRefresh();
     }, lerr("locks")));
-    // v104: who is online. Main Admin reads everybody, a Main Sub Admin only his own team (chain contains his name)
-    if (roleK === "main" || roleK === "mainsub") {
-        const pq = roleK === "main" ? fsCol("presence") : FB.query(fsCol("presence"), FB.where("chain", "array-contains", currentUser));
-        unsubs.push(FB.onSnapshot(pq, snap => {
-            const r = {}; snap.docs.forEach(d => { const x = d.data(); r[x.user] = x.seen && x.seen.toMillis ? x.seen.toMillis() : nowMs(); });
-            db.presence = r; if (curPanel === "panelActivity" || curPanel === "panelDash") scheduleRefresh();
-        }, e => { console.error(e); }));
-    }
+    // v104: who is online - listened to ONLY while Team Activity / Dashboard is open (see syncPresenceListener)
+    syncPresenceListener();
     // payments received from Main Sub Admins: Main Admin only
     if (roleK === "main") unsubs.push(FB.onSnapshot(fsCol("ledger"), snap => {
         const r = {}; snap.docs.forEach(d => { r[d.id] = d.data(); });
@@ -1548,7 +1646,7 @@ window.onload = function () {
     startClockEngine();
     document.addEventListener("click", function (e) {
         const m = $("floatingMenuOptions");
-        if (m.style.display === "block" && !(e.target.closest && e.target.closest(".nav-more")) && (!m.contains(e.target) || (e.target === m && e.clientX < m.getBoundingClientRect().left))) { m.classList.remove("open"); m.style.display = "none"; }
+        if (m.style.display === "block" && !(e.target.closest && e.target.closest(".nav-more")) && (!m.contains(e.target) || e.target === m)) { m.classList.remove("open"); m.style.display = "none"; }
     });
     let sess = null;
     try { sess = JSON.parse(localStorage.getItem(SESSION_KEY)); } catch (e) {}
@@ -1734,6 +1832,7 @@ function enterApp(user, role) {
     $("listShareBtn").style.display = isPriv() ? "inline-block" : "none";
     $("winShareBtn").style.display = isPriv() ? "inline-block" : "none";
     $("settleShareBtn").style.display = isPriv() ? "block" : "none";
+    layoutMenu();
     lastLockSig = lockSig();
     lastResSig = "";
     loadPending();
@@ -1743,9 +1842,9 @@ function enterApp(user, role) {
     navigateTo(homePanel(), null, true);
 }
 // ---------- v104: ONLINE heartbeat ----------
-// While the app is open and visible, every 3 minutes the user writes "I am here" (one small record, id = username). Online = seen in the last 5 minutes.
+// While the app is open and visible, every 10 minutes the user writes "I am here" (one small record, id = username). Online = seen in the last 12 minutes.
 let presTimer = null;
-const PRES_EVERY = 3 * 60000, PRES_ONLINE = 5 * 60000;
+const PRES_EVERY = 10 * 60000, PRES_ONLINE = 12 * 60000;
 function presenceBeat() {
     try {
         if (!currentUser || roleK === "main" || !window.FB || !AU.auth.currentUser || document.hidden) return;
@@ -1783,6 +1882,20 @@ function logout() {
 }
 
 // ---------- NAVIGATION ----------
+let menuHome = [];
+function layoutMenu() {
+    const m = $("floatingMenuOptions"), box = $("msubBox");
+    if (!m || !box) return;
+    menuHome.slice().reverse().forEach(h => { if (h.next && h.next.parentNode === h.parent) h.parent.insertBefore(h.el, h.next); else h.parent.appendChild(h.el); });
+    menuHome = [];
+    m.classList.toggle("sub5", roleK === "sub");
+    if (roleK !== "sub") return;
+    ["msSE", "msSW", "msSR", "msSS", "msLS"].forEach(id => {
+        const el = $(id); if (!el) return;
+        menuHome.push({ el: el, parent: el.parentNode, next: el.nextSibling });
+        box.appendChild(el);
+    });
+}
 function toggleFloatingMenu() {
     const m = $("floatingMenuOptions");
     if (m.style.display === "block") { m.classList.remove("open"); m.style.display = "none"; return; }
@@ -1813,6 +1926,7 @@ function navigateTo(id, mode, fromPop) {
     document.querySelectorAll(".screen-panel").forEach(p => p.classList.remove("active"));
     $(id).classList.add("active");
     curPanel = id;
+    syncPresenceListener();
     updateNav(id);
     document.body.classList.toggle("onhome", id === "panelEntry" && roleK !== "main");
     if (!fromPop) { navDepth++; try { history.pushState({ p: id, m: mode || null, d: navDepth }, ""); } catch (e) {} }
@@ -3931,9 +4045,9 @@ function renderLimits() {
     const btnS = "width:auto;margin:0;padding:8px 12px;font-size:14px;";
     const anyOn = limOn(), allOn = SHIFTS.every(x => limOnFor(x.code));
     const onoff =
-        `<div style="padding:10px;border-radius:8px;text-align:center;font-weight:900;font-size:15px;color:#fff;background:${allOn ? "#1b5e20" : anyOn ? "#e65100" : "#7f1d1d"};">${allOn ? "🟢 LIMIT IS ON (all shifts)" : anyOn ? "🟠 LIMIT IS ON IN SOME SHIFTS" : "🔴 LIMIT IS OFF (nothing is limited)"}</div>` +
-        `<div style="display:flex;gap:8px;margin:8px 0;"><button class="admin-btn" style="margin:0;background:#2e7d32;" onclick="setLimitState('ALL', true)">🟢 ON · all shifts</button><button class="admin-btn" style="margin:0;background:#b71c1c;" onclick="setLimitState('ALL', false)">🔴 OFF · all shifts</button></div>` +
-        SHIFTS.map(x => { const o = limOnFor(x.code); return `<div class="ld-row"><span>${esc(x.label)}<small>${o ? "🟢 ON" : "🔴 OFF"}</small></span><button class="admin-btn" style="${btnS}background:${o ? "#b71c1c" : "#2e7d32"};" onclick="setLimitState('${x.code}', ${!o})">${o ? "Turn OFF" : "Turn ON"}</button></div>`; }).join("");
+        `<div style="padding:10px;border-radius:8px;text-align:center;font-weight:900;font-size:15px;color:#fff;background:${allOn ? "#1b5e20" : anyOn ? "#e65100" : "#7f1d1d"};">${allOn ? "✔ LIMIT IS ON (all shifts)" : anyOn ? "✔ LIMIT IS ON IN SOME SHIFTS" : "✖ LIMIT IS OFF (nothing is limited)"}</div>` +
+        `<div style="display:flex;gap:8px;margin:8px 0;"><button class="admin-btn" style="margin:0;background:#2e7d32;" onclick="setLimitState('ALL', true)">✔ ON · all shifts</button><button class="admin-btn" style="margin:0;background:#b71c1c;" onclick="setLimitState('ALL', false)">✖ OFF · all shifts</button></div>` +
+        SHIFTS.map(x => { const o = limOnFor(x.code); return `<div class="ld-row"><span>${esc(x.label)}<small style="font-size:15px;font-weight:900;color:${o ? '#69f0ae' : '#ff8a80'};">${o ? "✔ ON" : "✖ OFF"}</small></span><button class="admin-btn" style="${btnS}background:${o ? "#b71c1c" : "#2e7d32"};" onclick="setLimitState('${x.code}', ${!o})">${o ? "Turn OFF" : "Turn ON"}</button></div>`; }).join("");
     $("limShiftBox").innerHTML = onoff;
     if ($("limShiftBox2")) $("limShiftBox2").innerHTML = onoff;
     const nlk = Object.keys(db.nlims || {}).sort();
