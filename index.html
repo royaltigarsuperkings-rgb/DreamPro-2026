@@ -832,6 +832,18 @@ html, body { overscroll-behavior: none; }
 .stbl td.clm { background: #fff3c4 !important; color: #b71c1c !important; font-size: 19px; -webkit-text-stroke: .8px currentColor; }
 .stbl td.bal { background: #c8f7dc !important; color: #00531f !important; font-size: 19px; -webkit-text-stroke: .8px currentColor; }
 .stbl tr.tot td.net, .stbl tr.tot td.clm, .stbl tr.tot td.bal { background: linear-gradient(90deg, #ff6f00, #e91e63) !important; color: #fff !important; }
+/* ===== v105: Number Limit two columns ===== */
+.lim-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
+.lim-col { min-width: 0; background: #14142a; border: 1px solid #333; border-radius: 8px; padding: 8px 6px; }
+.lim-col label { font-size: 11px; }
+.lim-col .admin-select, .lim-col .admin-input { padding: 6px 4px; font-size: 14px; min-width: 0; }
+.lim-col .admin-btn { padding: 8px 4px; font-size: 13px; }
+.lim-ttl { font-size: 13px; font-weight: 900; margin-bottom: 4px; }
+.lim-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 6px; }
+.lim-mini > div { min-width: 0; }
+.lim-mini .admin-input { text-align: center; font-size: 16px; padding: 5px 2px; }
+.lim-mini .lim-all { grid-column: 1 / -1; }
+.lim-col .ld-row { padding: 6px; font-size: 13px; flex-wrap: wrap; gap: 4px; }
 </style>
 </head>
 <body>
@@ -1065,6 +1077,8 @@ html, body { overscroll-behavior: none; }
             <input type="text" inputmode="numeric" id="nlVal" class="admin-input" oninput="this.value=this.value.replace(/\D/g,'')">
             <button class="admin-btn" style="background:#ef6c00;" onclick="saveNumLimitAction(false)">⭐ Save limit for these numbers</button>
             <button class="admin-btn" style="background:#b71c1c;" onclick="saveNumLimitAction(true)">🔒 Close these numbers</button>
+            <div class="note" style="margin-top:8px;">ON / OFF (same switch as in the Number Limit part above: just for convenience here)</div>
+            <div id="limShiftBox2" style="margin-top:6px;"></div>
             <div id="nlList" style="margin-top:8px;"></div>
             <div class="admin-section-title" style="margin-top:14px; color:#b2ff59;">📊 Number Load (highest first)</div>
             <select id="loadShift" class="admin-select" onchange="renderLimits()"></select>
@@ -1217,10 +1231,10 @@ window.dispatchEvent(new Event("fb-ready"));
 <script>
 
 const SHIFTS = [
-    { code: "DR1",  label: "DR 1:00 PM",  short: "1pm", lock: 12 * 60 + 57 },
+    { code: "DR1",  label: "DR 1:00 PM",  short: "1pm", lock: 12 * 60 + 56 },
     { code: "LSK3", label: "LSK 3:00 PM", short: "3pm", lock: 15 * 60 },
-    { code: "DR6",  label: "DR 6:00 PM",  short: "6pm", lock: 17 * 60 + 57 },
-    { code: "DR8",  label: "DR 8:00 PM",  short: "8pm", lock: 19 * 60 + 57 }
+    { code: "DR6",  label: "DR 6:00 PM",  short: "6pm", lock: 17 * 60 + 56 },
+    { code: "DR8",  label: "DR 8:00 PM",  short: "8pm", lock: 19 * 60 + 56 }
 ];
 const DAY_NAMES = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"];
 const TABS = {
@@ -3916,10 +3930,12 @@ function renderLimits() {
     if (!$("loadShift").options.length) $("loadShift").innerHTML = shOpts;
     const btnS = "width:auto;margin:0;padding:8px 12px;font-size:14px;";
     const anyOn = limOn(), allOn = SHIFTS.every(x => limOnFor(x.code));
-    $("limShiftBox").innerHTML =
+    const onoff =
         `<div style="padding:10px;border-radius:8px;text-align:center;font-weight:900;font-size:15px;color:#fff;background:${allOn ? "#1b5e20" : anyOn ? "#e65100" : "#7f1d1d"};">${allOn ? "🟢 LIMIT IS ON (all shifts)" : anyOn ? "🟠 LIMIT IS ON IN SOME SHIFTS" : "🔴 LIMIT IS OFF (nothing is limited)"}</div>` +
         `<div style="display:flex;gap:8px;margin:8px 0;"><button class="admin-btn" style="margin:0;background:#2e7d32;" onclick="setLimitState('ALL', true)">🟢 ON · all shifts</button><button class="admin-btn" style="margin:0;background:#b71c1c;" onclick="setLimitState('ALL', false)">🔴 OFF · all shifts</button></div>` +
         SHIFTS.map(x => { const o = limOnFor(x.code); return `<div class="ld-row"><span>${esc(x.label)}<small>${o ? "🟢 ON" : "🔴 OFF"}</small></span><button class="admin-btn" style="${btnS}background:${o ? "#b71c1c" : "#2e7d32"};" onclick="setLimitState('${x.code}', ${!o})">${o ? "Turn OFF" : "Turn ON"}</button></div>`; }).join("");
+    $("limShiftBox").innerHTML = onoff;
+    if ($("limShiftBox2")) $("limShiftBox2").innerHTML = onoff;
     const nlk = Object.keys(db.nlims || {}).sort();
     const shName = k => { const sh = (db.nlsh || {})[k]; return sh && sh.length ? sh.map(c => (shiftObj(c) || { label: c }).label).join(", ") : "All shifts"; };
     $("nlList").innerHTML = nlk.length ? nlk.map(k => { const v = db.nlims[k]; return `<div class="ld-row"><span>${esc(k.replace("_", " "))}<small>${esc(shName(k))} · ${(db.nlclosed || {})[k] ? "🔒 CLOSED" : v > 0 ? "limit " + v : "no limit"}</small></span><button class="admin-btn" style="width:auto;margin:0;padding:6px 10px;font-size:13px;background:#b71c1c;" onclick="delNumLimit('${esc(k)}')">Remove</button></div>`; }).join("") : '<div class="empty-note">No special numbers.</div>';
