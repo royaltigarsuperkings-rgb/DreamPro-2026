@@ -928,6 +928,38 @@ body:has(#floatingMenuOptions[style*="block"]) #bottomNav button.nav-more { back
 .floating-menu-options button[onclick*="panelActivity"]            { background: linear-gradient(90deg, #4e8f12, #9ad63a) !important; }
 .floating-menu-options button[onclick*="panelAdmin"]               { background: linear-gradient(90deg, #283593, #7c8cff) !important; }
 .floating-menu-options button[onclick*="panelAudit"]               { background: linear-gradient(90deg, #b71c1c, #ff5252) !important; }
+/* ===== v113: blue payment card + 7-day table; compact one-column menu that scrolls fully, Search at the bottom ===== */
+.sbox.paybox { background: linear-gradient(135deg, #1a0b4d, #4527a0 55%, #7b1fa2); border: 2px solid #ce93d8; color: #fff; }
+.paybox .pay-in { border-color: #ce93d8; }
+.paybox .pay-date { font-size: 14px; color: #ffe082; background: rgba(0,0,0,.28); padding: 2px 10px; border-radius: 14px; white-space: nowrap; }
+.paybox .pay-total { background: #ffd54f; color: #1a0b4d; padding: 2px 14px; border-radius: 22px; -webkit-text-stroke: 0; font-size: 22px; box-shadow: 0 0 0 2px #fff inset; }
+.paybox .pay-left { padding: 2px 14px; border-radius: 22px; color: #fff; }
+.paybox .pay-left.pl-due { background: #ff6d00; }
+.paybox .pay-left.pl-ok { background: #00c853; }
+.paybox .pay-share { margin-top: 10px; width: 100%; }
+.pay-week { margin-top: 12px; border-top: 1px solid #82b1ff; padding-top: 6px; }
+.pw-h { font-size: 15px; font-weight: 900; color: #ffe082; padding: 2px 0 4px; }
+.pw-r { display: grid; grid-template-columns: 1.25fr 1fr .9fr 1.1fr; gap: 4px; font-size: 13px; font-weight: 800; color: #cfe3ff; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,.12); }
+.pw-r span { text-align: right; } .pw-r span:first-child { text-align: left; }
+.pw-c { color: #ffe082; }
+.pw-now { color: #fff; background: rgba(255,255,255,.12); border-radius: 4px; }
+.floating-menu-options[style*="block"] { display: flex !important; flex-direction: column; justify-content: flex-start !important; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.floating-menu-options .mcols, .floating-menu-options .msub { margin-top: auto; }
+.mcols { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.mcol { align-items: flex-end; gap: 6px; }
+.mcol:nth-child(1) { order: 2; }
+.mcol:nth-child(2) { order: 1; }
+.mcol-h { font-size: 12px !important; padding: 2px 6px; }
+.mcol > button, .msub > button { min-height: 40px; padding: 5px 14px 5px 10px; gap: 8px; }
+.mcol > button i, .msub > button i { font-size: 19px; }
+.mcol > button b, .msub > button b { font-size: 14px; }
+.floating-menu-options.sub5 .msub { grid-template-columns: 1fr; justify-items: end; gap: 6px; }
+.msub > button:nth-child(5) { grid-column: auto; justify-self: end; order: -1; }
+.mcol > button, .msub > button { width: min(250px, 78vw) !important; max-width: none !important; min-height: 50px !important; height: 50px; justify-content: flex-start; padding: 0 14px; border-radius: 14px; }
+.mcol > button b, .msub > button b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 15px; }
+.mcol > button i, .msub > button i { font-size: 21px; width: 26px; text-align: center; }
+.mcol-h { width: min(250px, 78vw); text-align: left !important; align-self: flex-end !important; }
+.floating-menu-options.sub5 .msub { justify-items: end; }
 </style>
 </head>
 <body>
@@ -3454,22 +3486,87 @@ function ledgerPrev(o, date) {
     for (let d = todayKey(); d < date; d = addDays(d, 1)) if (!ledgerDoc(o, d)) sum += bonusTotals(bonusRows(o, d, "ALL")).pay;
     return Math.round(sum * 100) / 100;
 }
-function payBlockHTML(o, i, date, duePay) {
+// Everything the payment card shows (also used for the shared picture)
+function payData(o, date, duePay) {
     const led = ledgerDoc(o, date), paid = led ? (led.paid || 0) : 0, prev = ledgerPrev(o, date), total = prev + duePay, left = total - paid;
-    const pays = led && led.pays ? led.pays : [];
-    const tm = t => { const d = new Date(t); let h = d.getHours(); const ap = h >= 12 ? "PM" : "AM"; h = h % 12 || 12; return h + ":" + pad(d.getMinutes()) + " " + ap; };
-    return `<div class="sbox big paybox"><div class="summary-row"><span>💰 ${esc(o.toUpperCase())} · PAYMENT</span></div>` +
+    const r2 = n => Math.round(n * 100) / 100, t0 = todayKey(), ws = addDays(date, -6);
+    let cum = ledgerPrev(o, ws); const week = [];
+    for (let d = ws; d <= date; d = addDays(d, 1)) {
+        const L = ledgerDoc(o, d);
+        const due = d === date ? duePay : (L ? (L.due || 0) : (d >= t0 ? bonusTotals(bonusRows(o, d, "ALL")).pay : 0));
+        const got = L ? (L.paid || 0) : 0;
+        cum += due - got;
+        week.push({ d: d, due: r2(due), got: r2(got), bal: r2(cum) });
+    }
+    return { led: led, paid: paid, prev: prev, duePay: duePay, total: total, left: left, pays: led && led.pays ? led.pays : [], week: week };
+}
+function payTime(t) { const d = new Date(t); let h = d.getHours(); const ap = h >= 12 ? "PM" : "AM"; h = h % 12 || 12; return h + ":" + pad(d.getMinutes()) + " " + ap; }
+function payBlockHTML(o, i, date, duePay) {
+    const D = payData(o, date, duePay), left = D.left;
+    const wk = `<div class="pay-week"><div class="pw-h">📅 LAST 7 DAYS</div><div class="pw-r pw-c"><span>Day</span><span>To Pay</span><span>Got</span><span>Balance</span></div>` +
+        D.week.map(w => `<div class="pw-r${w.d === date ? " pw-now" : ""}"><span>${showDate(w.d).slice(0, 5)} ${weekday(w.d).slice(0, 3)}</span><span>${fmt(w.due)}</span><span>${w.got ? fmt(w.got) : "–"}</span><span>${fmt(w.bal)}</span></div>`).join("") + `</div>`;
+    return `<div class="sbox big paybox"><div class="summary-row"><span>💰 ${esc(o.toUpperCase())} · PAYMENT</span><span class="pay-date">📅 ${showDate(date)} · ${weekday(date).slice(0, 3).toUpperCase()}</span></div>` +
         (db.ledgerErr ? `<div class="pay-line" style="color:#ffd54f; text-align:left;">⚠ Saved on this phone only (Firebase rule for "ledger" not added yet).</div>` : "") +
-        `<div class="summary-row" style="margin-top:4px;"><span>Previous Balance:</span><span style="color:#82d4ff;">${fmt(prev)}</span></div>` +
+        `<div class="summary-row" style="margin-top:4px;"><span>Previous Balance:</span><span style="color:#82d4ff;">${fmt(D.prev)}</span></div>` +
         `<div class="summary-row"><span>+ Today To Pay:</span><span style="color:#82d4ff;">${fmt(duePay)}</span></div>` +
         `<div class="pay-line">= Ledger &amp; Settlement balance of ${esc(o.toUpperCase())} and his team (2D, 3D, Box and 1D, after prizes) − Team Bonus</div>` +
-        `<div class="summary-row"><span>= Total Due:</span><span>${fmt(total)}</span></div>` +
-        `<div class="summary-row"><span>− Got today (net):</span><span style="color:#69f0ae;">${fmt(paid)}</span></div>` +
-        pays.map(p => `<div class="pay-line">${p.a < 0 ? "Gave him " + fmt(-p.a) : "Got " + fmt(p.a)} · ${tm(p.t)}</div>`).join("") +
-        `<div class="summary-row" style="border-top:1px solid #fff; padding-top:4px; margin-top:4px; font-size:22px;"><span>BALANCE LEFT:</span><span style="color:${left > 0 ? "#ffd54f" : "#69f0ae"};">${fmt(left)}</span></div>` +
-        (left < 0 ? `<div class="pay-line">Negative = he has paid extra, or you have to pay him</div>` : "") +
+        `<div class="summary-row"><span>= Total Due:</span><span class="pay-total">${fmt(D.total)}</span></div>` +
+        `<div class="summary-row"><span>− Got today (net):</span><span style="color:#69f0ae;">${fmt(D.paid)}</span></div>` +
+        D.pays.map(p => `<div class="pay-line">${p.a < 0 ? "Gave him " + fmt(-p.a) : "Got " + fmt(p.a)} · ${payTime(p.t)}</div>`).join("") +
+        `<div class="summary-row" style="border-top:1px solid #fff; padding-top:4px; margin-top:4px; font-size:22px;"><span>BALANCE LEFT:</span><span class="pay-left ${left > 0 ? "pl-due" : "pl-ok"}">${fmt(left)}</span></div>` +
+        (left < 0 ? `<div class="pay-line">Negative = he has paid extra, or you have to pay him</div>` : "") + wk +
         `<div class="pay-row"><input type="text" inputmode="decimal" class="pay-in" id="payIn_${i}" placeholder="Amount" autocomplete="off"><button class="pay-save" onclick="savePayment(${i}, 1)">Got</button><button class="pay-gave" onclick="savePayment(${i}, -1)">Gave</button><button class="pay-undo" onclick="undoPayment(${i})">Undo</button></div>` +
-        `<div class="pay-line" style="text-align:left;">Got = he gave you money. Gave = you gave him money (advance / his winnings). Both are saved for this day.</div></div>`;
+        `<div class="pay-line" style="text-align:left;">Got = he gave you money (taken off his balance). Gave = you gave him money (advance / his winnings). Whatever is left carries to the next day automatically.</div>` +
+        `<button class="share-btn pay-share" onclick="sharePayment(${i})">📤 Share Payment (picture)</button></div>`;
+}
+// The card drawn as a picture, same colours, so WhatsApp shows it exactly like the screen
+function drawPayCard(o, D, date) {
+    const W = 1000, rowH = 62, nPay = D.pays.length, nW = D.week.length;
+    const H = 40 + 80 + 56 + 4 * rowH + nPay * 44 + 30 + 70 + 50 + nW * 50 + 30 + 120 + 50;
+    const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    const c = cv.getContext("2d");
+    const rr = (x, y, w, h, r) => { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); };
+    const g = c.createLinearGradient(0, 0, W, H); g.addColorStop(0, "#1a0b4d"); g.addColorStop(.55, "#4527a0"); g.addColorStop(1, "#7b1fa2");
+    rr(0, 0, W, H, 0); c.fillStyle = g; c.fill();
+    rr(8, 8, W - 16, H - 16, 28); c.lineWidth = 6; c.strokeStyle = "#ce93d8"; c.stroke();
+    const F = "-apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif", L = 50, R = W - 50;
+    const row = (y, a, b, col, sz) => { c.font = "900 " + (sz || 38) + "px " + F; c.textAlign = "left"; c.fillStyle = "#fff"; c.fillText(a, L, y); c.textAlign = "right"; c.fillStyle = col || "#fff"; c.fillText(b, R, y); };
+    let y = 40 + 44;
+    c.font = "900 44px " + F; c.textAlign = "left"; c.fillStyle = "#fff"; c.fillText("💰 " + o.toUpperCase() + " · PAYMENT", L, y);
+    c.font = "900 28px " + F; c.textAlign = "right"; c.fillStyle = "#ffe082"; c.fillText(showDate(date) + " · " + weekday(date).slice(0, 3).toUpperCase(), R, y);
+    y += 50; c.font = "800 28px " + F; c.fillStyle = "#cfe3ff"; c.fillText("DREAM PRO · " + showDate(date) + " " + weekday(date), L, y);
+    y += 20;
+    y += rowH; row(y, "Previous Balance:", fmt(D.prev), "#82d4ff");
+    y += rowH; row(y, "+ Today To Pay:", fmt(D.duePay), "#82d4ff");
+    y += rowH; row(y, "= Total Due:", "", "#fff");
+    { const tt = fmt(D.total); c.font = "900 42px " + F; const w2 = c.measureText(tt).width; rr(R - w2 - 36, y - 44, w2 + 36, 62, 31); c.fillStyle = "#ffd54f"; c.fill(); c.fillStyle = "#1a0b4d"; c.textAlign = "right"; c.fillText(tt, R - 18, y); }
+    y += rowH; row(y, "− Got today (net):", fmt(D.paid), "#69f0ae");
+    D.pays.forEach(p => { y += 44; c.font = "700 28px " + F; c.textAlign = "right"; c.fillStyle = "#e3f2fd"; c.fillText((p.a < 0 ? "Gave him " + fmt(-p.a) : "Got " + fmt(p.a)) + " · " + payTime(p.t), R, y); });
+    y += 30; c.fillStyle = "#fff"; c.fillRect(L, y, R - L, 3);
+    y += 70; c.font = "900 36px " + F; c.textAlign = "left"; c.fillStyle = "#ffe082"; c.fillText("📅 LAST 7 DAYS", L, y);
+    y += 50; const cx = [L, 470, 700, R];
+    const wr = (a, b, d, e, col, bold) => { c.font = (bold ? "900 " : "800 ") + "29px " + F; c.fillStyle = col; c.textAlign = "left"; c.fillText(a, cx[0], y); c.textAlign = "right"; c.fillText(b, cx[1], y); c.fillText(d, cx[2], y); c.fillText(e, cx[3], y); };
+    wr("Day", "To Pay", "Got", "Balance", "#ffe082", true);
+    D.week.forEach(w => { y += 50; wr(showDate(w.d).slice(0, 5) + " " + weekday(w.d).slice(0, 3), fmt(w.due), w.got ? fmt(w.got) : "–", fmt(w.bal), w.d === date ? "#fff" : "#cfe3ff", w.d === date); });
+    y += 30; c.fillStyle = "#fff"; c.fillRect(L, y, R - L, 3);
+    y += 90; c.font = "900 46px " + F; c.textAlign = "left"; c.fillStyle = "#fff"; c.fillText("BALANCE LEFT:", L, y);
+    const txt = fmt(D.left); c.font = "900 54px " + F; const tw = c.measureText(txt).width;
+    rr(R - tw - 44, y - 58, tw + 44, 78, 39); c.fillStyle = D.left > 0 ? "#ff6d00" : "#00c853"; c.fill();
+    c.fillStyle = "#fff"; c.textAlign = "right"; c.fillText(txt, R - 22, y);
+    return cv;
+}
+async function sharePayment(i) {
+    const o = _bonusOwners[i]; if (!o) return;
+    const duePay = Math.round(bonusTotals(bonusRows(o, selDate, "ALL")).pay * 100) / 100;
+    const D = payData(o, selDate, duePay), cv = drawPayCard(o, D, selDate);
+    cv.toBlob(async blob => {
+        if (!blob) { toast("Could not make the picture."); return; }
+        const file = new File([blob], "payment-" + o + "-" + selDate + ".png", { type: "image/png" });
+        try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); return; } }
+        catch (e) { if (e && e.name === "AbortError") return; }
+        const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
+        toast("Picture saved. Send it from your gallery in WhatsApp.");
+    }, "image/png");
 }
 function writeLedger(rec) {
     db.ledger = db.ledger || {};
@@ -4372,6 +4469,10 @@ async function resetPasswordAction() {
     window.addEventListener("online", function () { check(false); });
     setInterval(function () { if (!document.hidden) check(false); }, EVERY);
 })();
+</script>
+<script>
+(function () { var m = document.getElementById("floatingMenuOptions"); if (!m) return;
+  m.addEventListener("click", function (e) { var t = e.target; if (t === m || (t.classList && (t.classList.contains("mcols") || t.classList.contains("mcol") || t.classList.contains("msub")))) toggleFloatingMenu(); }); })();
 </script>
 </body>
 </html>
