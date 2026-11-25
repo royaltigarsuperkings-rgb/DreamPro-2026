@@ -1337,7 +1337,7 @@ body:has(#floatingMenuOptions[style*="block"]) #bottomNav button.nav-more { back
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
 import { initializeAuth, getAuth, browserLocalPersistence, browserSessionPersistence, inMemoryPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
-import { getFirestore, initializeFirestore, memoryLocalCache, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch, onSnapshot, query, where, limit, orderBy, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+import { getFirestore, initializeFirestore, memoryLocalCache, persistentLocalCache, persistentSingleTabManager, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch, onSnapshot, query, where, limit, orderBy, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 const firebaseConfig = {
     apiKey: "AIzaSyD9aLUW9-R-IxTPRiT04cUw5CEFLREDYew",
     authDomain: "dream-pro-95b6a.firebaseapp.com",
@@ -1358,9 +1358,18 @@ window.AU = { auth, secAuth, signInWithEmailAndPassword, createUserWithEmailAndP
 // which made login hang on other phones. This switches to long-polling automatically when that happens.
 // memoryLocalCache: no IndexedDB. The persistent (IndexedDB) cache crashed with
 // "INTERNAL ASSERTION FAILED: Unexpected state (ID: b815)" on phones that open the file straight from WhatsApp.
+// v106: the saved (IndexedDB) cache is used ONLY on a normal https page (GitHub / APK) and only until it ever crashes on this phone.
+// With it, when the app is opened again within ~30 minutes Firebase sends only the CHANGED documents instead of all of today's entries again (far fewer reads).
+// If the crash message below is ever seen, the phone switches back to the memory cache by itself on the next start.
+function dpAssertSeen(m) { try { if (m && /INTERNAL ASSERTION FAILED/.test(String(m))) localStorage.setItem("dp_nopersist", "1"); } catch (e) {} }
+window.addEventListener("error", ev => dpAssertSeen(ev && (ev.message || (ev.error && ev.error.message))));
+window.addEventListener("unhandledrejection", ev => dpAssertSeen(ev && ev.reason && (ev.reason.message || ev.reason)));
+let usePersist = false;
+try { usePersist = /^https?:$/.test(location.protocol) && !!window.indexedDB && localStorage.getItem("dp_nopersist") !== "1"; } catch (e) { usePersist = false; }
+window.DP_PERSIST = usePersist;
 let fs;
-try { fs = initializeFirestore(app, { localCache: memoryLocalCache(), experimentalAutoDetectLongPolling: true }); }
-catch (e) { fs = getFirestore(app); }
+try { fs = initializeFirestore(app, { localCache: usePersist ? persistentLocalCache({ tabManager: persistentSingleTabManager({}) }) : memoryLocalCache(), experimentalAutoDetectLongPolling: true }); }
+catch (e) { window.DP_PERSIST = false; try { fs = initializeFirestore(app, { localCache: memoryLocalCache(), experimentalAutoDetectLongPolling: true }); } catch (e2) { fs = getFirestore(app); } }
 window.FB = { fs, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch, onSnapshot, query, where, limit, orderBy, serverTimestamp, increment };
 window.dispatchEvent(new Event("fb-ready"));
 </script>
@@ -1552,7 +1561,7 @@ function syncPresenceListener() {
     if (presUnsub || !window.FB) return;
     const pq = roleK === "main" ? fsCol("presence") : FB.query(fsCol("presence"), FB.where("chain", "array-contains", currentUser));
     presUnsub = FB.onSnapshot(pq, snap => {
-        cntRead("presence", snap.docChanges().length);
+        cntRead("presence", (snap.metadata.fromCache ? 0 : snap.docChanges().length));
         const r = {}; snap.docs.forEach(d => { const x = d.data(); r[x.user] = x.seen && x.seen.toMillis ? x.seen.toMillis() : nowMs(); });
         db.presence = r; if (curPanel === "panelActivity" || curPanel === "panelDash") scheduleRefresh();
     }, e => { console.error(e); });
@@ -1568,7 +1577,7 @@ function rsEnsure() {
 }
 function cntRead(name, n) {
     try {
-        if (roleK !== "main" || !n) return;
+        if (!n) return;
         rsEnsure();
         readStat.c[name] = (readStat.c[name] || 0) + n;
         localStorage.setItem(READSTAT_KEY, JSON.stringify(readStat));
@@ -1597,26 +1606,26 @@ function startListeners(isRetry) {
     cntRead("#listener starts", 1);
     if (!window.FB) { window.addEventListener("fb-ready", () => { if (currentUser) startListeners(); }, { once: true }); return; }
     const t = todayKey();       // only today and later is kept live; older days are loaded through Search
-    unsubs.push(FB.onSnapshot(fsCol("users"), snap => { cntRead("users", snap.docChanges().length); db.users = snap.docs.map(d => d.data()); scheduleRefresh(); }, lerr("users")));
+    unsubs.push(FB.onSnapshot(fsCol("users"), snap => { cntRead("users", (snap.metadata.fromCache ? 0 : snap.docChanges().length)); db.users = snap.docs.map(d => d.data()); scheduleRefresh(); }, lerr("users")));
     if (roleK === "sub" || roleK === "mainsub") {
         // a Sub Admin reads only his own entries; a Main Sub Admin only the entries of his team (chain contains his name): three small queries (today, tomorrow, day after)
         const dates = [t, addDays(t, 1), addDays(t, 2)], parts = {}, myUid = AU.auth.currentUser ? AU.auth.currentUser.uid : "";
         const who = roleK === "sub" ? FB.where("uid", "==", myUid) : FB.where("chain", "array-contains", currentUser);
         dates.forEach(d => unsubs.push(FB.onSnapshot(FB.query(fsCol("entries"), who, FB.where("date", "==", d)), snap => {
-            cntRead("entries", snap.docChanges().length);
+            cntRead("entries", (snap.metadata.fromCache ? 0 : snap.docChanges().length));
             parts[d] = snap.docs.map(x => x.data());
             db.entries = [].concat.apply([], dates.map(k => parts[k] || []));
             scheduleRefresh();
         }, lerr("my entries"))));
     } else {
-        unsubs.push(FB.onSnapshot(FB.query(fsCol("entries"), FB.where("date", ">=", t)), snap => { cntRead("entries", snap.docChanges().length); db.entries = snap.docs.map(d => d.data()); scheduleRefresh(); }, lerr("entries")));
+        unsubs.push(FB.onSnapshot(FB.query(fsCol("entries"), FB.where("date", ">=", t)), snap => { cntRead("entries", (snap.metadata.fromCache ? 0 : snap.docChanges().length)); db.entries = snap.docs.map(d => d.data()); scheduleRefresh(); }, lerr("entries")));
     }
     unsubs.push(FB.onSnapshot(FB.query(fsCol("results"), FB.where("date", ">=", t)), snap => {
-        cntRead("results", snap.docChanges().length);
+        cntRead("results", (snap.metadata.fromCache ? 0 : snap.docChanges().length));
         const r = {}; snap.docs.forEach(d => { const x = d.data(); r[x.date + "|" + x.shift] = x; }); db.results = r; scheduleRefresh();
     }, lerr("results")));
     unsubs.push(FB.onSnapshot(FB.query(fsCol("locks"), FB.where("date", ">=", t)), snap => {
-        cntRead("locks", snap.docChanges().length);
+        cntRead("locks", (snap.metadata.fromCache ? 0 : snap.docChanges().length));
         const r = {}, cl = {}, nl = {}, ncl = {}, nsh = {}; let lim = {};
         snap.docs.forEach(d => { const x = d.data();
             if (x.kind === "numclosed") cl[loadKey(x.date, x.shift, x.box, x.number)] = { auto: !!x.auto };      // v100: closed numbers live in the existing "locks" collection
@@ -1629,7 +1638,7 @@ function startListeners(isRetry) {
     syncPresenceListener();
     // payments received from Main Sub Admins: Main Admin only
     if (roleK === "main") unsubs.push(FB.onSnapshot(fsCol("ledger"), snap => {
-        cntRead("ledger", snap.docChanges().length);
+        cntRead("ledger", (snap.metadata.fromCache ? 0 : snap.docChanges().length));
         const r = {}; snap.docs.forEach(d => { r[d.id] = d.data(); });
         // records saved on this phone while Firebase was not allowed are moved to Firebase now
         const loc = localLedgerLoad(), ks = Object.keys(loc);
@@ -1908,7 +1917,7 @@ function enterApp(user, role) {
     $("activityMenuBtn").style.display = isPriv() ? "inline-flex" : "none";
     $("mDash").style.display = roleK === "main" ? "inline-flex" : "none";           // Dashboard + Audit Log: Main Admin only
     $("auditMenuBtn").style.display = roleK === "main" ? "inline-flex" : "none";
-    $("readsMenuBtn").style.display = roleK === "main" ? "inline-flex" : "none";
+    $("readsMenuBtn").style.display = "inline-flex";
     $("searchBonusBtn").style.display = isPriv() ? "inline-flex" : "none";      // Team Bonus: Main Admin + Main Sub Admin only
     $("searchScopeWrap").style.display = isPriv() ? "block" : "none";
     $("listDelBtn").style.display = "none";      // bulk delete: Main Admin only
@@ -2003,7 +2012,7 @@ function updateNav(id) {
 function navigateTo(id, mode, fromPop) {
     $("floatingMenuOptions").style.display = "none";
     if (id === "panelAdmin" && roleK !== "main") id = homePanel();
-    if ((id === "panelDash" || id === "panelAudit" || id === "panelReads") && roleK !== "main") id = homePanel();
+    if ((id === "panelDash" || id === "panelAudit") && roleK !== "main") id = homePanel();
     if (id === "panelBonus" && !isPriv()) id = homePanel();
     if (id === "panelActivity" && !isPriv()) id = homePanel();             // Team Bonus: never for a Sub Admin      // Core Management is for the Main Admin only
     if (!fromPop && id === curPanel && id !== "panelSearch") { refreshAll(); return; }
