@@ -3484,7 +3484,7 @@ function bonusTableHTML(rows) {
 // ---------- PAYMENTS RECEIVED (Main Admin only) ----------
 // One record per Main Sub Admin per day: what he had to pay that day (snapshot taken when a payment is saved) and the payments received.
 // Balance carried to the next day = sum of (due - received) of all earlier days.
-let _bonusOwners = [];
+let _bonusOwners = [], _payDate = "", _paySrc = null;      // the day (and its data) the payment box on screen belongs to: Team Bonus page = viewed day, Search = searched day
 const LOCAL_LEDGER = "dp_ledger_local_v1";
 function localLedgerLoad() { try { const o = JSON.parse(localStorage.getItem(LOCAL_LEDGER) || "{}"); return (o && typeof o === "object") ? o : {}; } catch (e) { return {}; } }
 function ledgerDoc(o, date) { return (db.ledger || {})[date + "_" + o] || null; }
@@ -3566,11 +3566,11 @@ function drawPayCard(o, D, date) {
 }
 async function sharePayment(i) {
     const o = _bonusOwners[i]; if (!o) return;
-    const duePay = Math.round(bonusTotals(bonusRows(o, selDate, "ALL")).pay * 100) / 100;
-    const D = payData(o, selDate, duePay), cv = drawPayCard(o, D, selDate);
+    const duePay = Math.round(bonusTotals(bonusRows(o, _payDate, "ALL", _paySrc)).pay * 100) / 100;
+    const D = payData(o, _payDate, duePay), cv = drawPayCard(o, D, _payDate);
     cv.toBlob(async blob => {
         if (!blob) { toast("Could not make the picture."); return; }
-        const file = new File([blob], "payment-" + o + "-" + selDate + ".png", { type: "image/png" });
+        const file = new File([blob], "payment-" + o + "-" + _payDate + ".png", { type: "image/png" });
         try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); return; } }
         catch (e) { if (e && e.name === "AbortError") return; }
         const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
@@ -3586,28 +3586,28 @@ function writeLedger(rec) {
 function savePayment(i, sign) {
     if (roleK !== "main") return;
     sign = sign === -1 ? -1 : 1;
-    const o = _bonusOwners[i], inp = $("payIn_" + i);
+    const o = _bonusOwners[i], inp = document.querySelector(".screen-panel.active #payIn_" + i);
     const v0 = Math.round(parseFloat(String(inp ? inp.value : "").replace(/,/g, "")) * 100) / 100;
     if (!o || isNaN(v0) || v0 <= 0) { alert("Type the amount (a plain number, no minus sign)."); return; }
     const v = v0 * sign;
-    if (!confirm((sign > 0 ? "Save " + fmt(v) + " GOT from " + o.toUpperCase() : "Save " + fmt(v0) + " GIVEN to " + o.toUpperCase() + " (he now owes you this more)") + " for " + showDate(selDate) + "?")) return;
-    const old = ledgerDoc(o, selDate), pays = (old && old.pays ? old.pays.slice() : []).concat([{ a: v, t: Date.now() }]);
-    const due = Math.round(bonusTotals(bonusRows(o, selDate, "ALL")).pay * 100) / 100;
-    writeLedger({ date: selDate, owner: o, due: due, pays: pays, paid: Math.round(pays.reduce((a, p) => a + p.a, 0) * 100) / 100, ts: Date.now() });
+    if (!confirm((sign > 0 ? "Save " + fmt(v) + " GOT from " + o.toUpperCase() : "Save " + fmt(v0) + " GIVEN to " + o.toUpperCase() + " (he now owes you this more)") + " for " + showDate(_payDate) + "?")) return;
+    const old = ledgerDoc(o, _payDate), pays = (old && old.pays ? old.pays.slice() : []).concat([{ a: v, t: Date.now() }]);
+    const due = Math.round(bonusTotals(bonusRows(o, _payDate, "ALL", _paySrc)).pay * 100) / 100;
+    writeLedger({ date: _payDate, owner: o, due: due, pays: pays, paid: Math.round(pays.reduce((a, p) => a + p.a, 0) * 100) / 100, ts: Date.now() });
     if (inp) { inp.value = ""; inp.blur(); }
-    audit(sign > 0 ? "Payment received" : "Payment given", o.toUpperCase() + " · " + fmt(v0) + " · " + showDate(selDate));
+    audit(sign > 0 ? "Payment received" : "Payment given", o.toUpperCase() + " · " + fmt(v0) + " · " + showDate(_payDate));
     toast(fmt(v0) + (sign > 0 ? " got from " : " given to ") + o.toUpperCase());
-    refreshAll();
+    refreshAll(); if (curPanel === "panelSearch" && searchMode === "bonus") runSearch();
 }
 function undoPayment(i) {
     if (roleK !== "main") return;
-    const o = _bonusOwners[i], old = ledgerDoc(o, selDate);
+    const o = _bonusOwners[i], old = ledgerDoc(o, _payDate);
     if (!old || !old.pays || !old.pays.length) { alert("No payment saved for this day."); return; }
     const last = old.pays[old.pays.length - 1];
     if (!confirm("Remove the last payment " + fmt(last.a) + " of " + o.toUpperCase() + "?")) return;
     const pays = old.pays.slice(0, -1);
-    writeLedger({ date: selDate, owner: o, due: old.due || 0, pays: pays, paid: Math.round(pays.reduce((a, p) => a + p.a, 0) * 100) / 100, ts: Date.now() });
-    refreshAll();
+    writeLedger({ date: _payDate, owner: o, due: old.due || 0, pays: pays, paid: Math.round(pays.reduce((a, p) => a + p.a, 0) * 100) / 100, ts: Date.now() });
+    refreshAll(); if (curPanel === "panelSearch" && searchMode === "bonus") runSearch();
 }
 // Entry money vs prize money of a Main Sub Admin and his whole team, shift by shift, then minus his team bonus.
 function ownerSettleHTML(o, date, shift, src, bonus) {
@@ -3633,7 +3633,7 @@ function bonusBodyHTML(date, shift, src) {
     const owners = roleK === "main" ? db.users.filter(x => roleKey(x.role) === "mainsub").map(x => x.username).sort() : [currentUser];
     const shifts = shift === "ALL" ? SHIFTS : [shiftObj(shift)];
     let html = "";
-    if (!src) _bonusOwners = owners;
+    _bonusOwners = owners; _payDate = date; _paySrc = src || null;
     owners.forEach((o, oi) => {
         html += `<div class="settle-user">💎 ${esc(o.toUpperCase())} · MAIN SUB (${rateOf(o)}%)</div>`;
         shifts.forEach(sh => {         // every shift separately
@@ -3649,7 +3649,7 @@ function bonusBodyHTML(date, shift, src) {
             `<div class="summary-row"><span>${esc(o.toUpperCase())}'s commission (${rateOf(o)}%):</span><span style="color:#69f0ae;">${fmt(t.mc)}</span></div>` +
             `<div class="summary-row" style="border-top:1px solid #fff; padding-top:4px; margin-top:4px; font-size:22px;"><span>TEAM BONUS:</span><span style="color:#ffd54f;">${fmt(t.bonus)}</span></div></div>`;
         html += ownerSettleHTML(o, date, shifts.length > 1 ? "ALL" : shifts[0].code, src, t.bonus);
-        if (!src && roleK === "main" && shifts.length > 1) html += payBlockHTML(o, oi, date, bonusTotals(bonusRows(o, date, "ALL", src)).pay);      // payments: Main Admin, whole day only
+        if (roleK === "main") html += payBlockHTML(o, oi, date, bonusTotals(bonusRows(o, date, "ALL", src)).pay);      // payments: Main Admin, whole day figures, shown whichever shift is selected
     });
     return html || '<div class="empty-note">No Main Sub Admin found.</div>';
 }
@@ -3785,6 +3785,8 @@ function renderActivity() {
 function renderDash() {
     const el = $("dashBody");
     if (!el || roleK !== "main") return;
+    const act = document.activeElement;
+    if (act && act.classList && act.classList.contains("pay-in")) return;      // typing a payment amount: keep the box as it is
     const t = todayKey(), users = visibleUsers(), m = n => (Math.round(n * 100) / 100).toString();
     let net = 0, claims = 0, cnt = 0;
     let h = `<div class="shift-banner"><span>📊 Dashboard · Today</span><small>${showDate(t)} · ${weekday(t)}</small></div>`;
@@ -3806,6 +3808,10 @@ function renderDash() {
         `<div class="pay-line" style="text-align:left;">Shifts with a pending result count as 0 claims for now.</div></div>`;
     const tm = sumEntries(getEntries(addDays(t, 1), "ALL", users));
     h += `<div class="note" style="padding:8px 4px;">Tomorrow's draws so far: ${tm.count} count · Net ${fmt(tm.net)}<br>📡 Entries loaded on this phone: ${db.entries.length}. The free Firebase plan allows 50,000 reads a day, every app opening reads about this many. Check Firebase console → Usage now and then.</div>`;
+    // payments (Got / Gave / Undo + share picture) of every Main Sub Admin, just above the online list
+    const owners = db.users.filter(x => roleKey(x.role) === "mainsub").map(x => x.username).sort();
+    _bonusOwners = owners; _payDate = t; _paySrc = null;
+    if (owners.length) h += `<div class="shift-banner" style="margin-top:12px;"><span>💰 Payments · ${showDate(t)}</span></div>` + owners.map((o, oi) => payBlockHTML(o, oi, t, bonusTotals(bonusRows(o, t, "ALL")).pay)).join("");
     h += `<div class="shift-banner" style="margin-top:12px;"><span>👥 Last Entry · Today</span></div>` + activityHTML(users);
     el.innerHTML = h;
 }
